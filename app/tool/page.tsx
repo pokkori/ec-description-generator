@@ -13,7 +13,7 @@ const PLANS = [
     price: "¥980",
     per: "月",
     limit: "50件/月",
-    gumroadUrl: "https://gumroad.com/l/REPLACE_BASIC",
+    stripeKey: "standard",
     highlight: false,
   },
   {
@@ -21,7 +21,7 @@ const PLANS = [
     price: "¥2,980",
     per: "月",
     limit: "500件/月",
-    gumroadUrl: "https://gumroad.com/l/REPLACE_PRO",
+    stripeKey: "business",
     highlight: true,
   },
   {
@@ -29,10 +29,20 @@ const PLANS = [
     price: "¥9,800",
     per: "月",
     limit: "無制限",
-    gumroadUrl: "https://gumroad.com/l/REPLACE_BUSINESS",
+    stripeKey: "enterprise",
     highlight: false,
   },
 ];
+
+async function startCheckout(plan: string) {
+  const res = await fetch("/api/stripe/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan }),
+  });
+  const { url } = await res.json();
+  if (url) window.location.href = url;
+}
 
 function PaywallModal({ onClose }: { onClose: () => void }) {
   return (
@@ -48,12 +58,10 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-3 mb-5">
           {PLANS.map((plan) => (
-            <a
+            <button
               key={plan.name}
-              href={plan.gumroadUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${
+              onClick={() => startCheckout(plan.stripeKey)}
+              className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border transition-colors ${
                 plan.highlight
                   ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
                   : "bg-white text-gray-800 border-gray-200 hover:border-blue-400"
@@ -71,7 +79,7 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
                   /{plan.per}
                 </div>
               </div>
-            </a>
+            </button>
           ))}
         </div>
 
@@ -332,10 +340,8 @@ export default function Home() {
                 <span className="text-sm font-normal text-gray-500">/{plan.per}</span>
               </div>
               <div className="text-xs text-gray-500 mt-1 mb-4">{plan.limit}</div>
-              <a
-                href={plan.gumroadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => startCheckout(plan.stripeKey)}
                 className={`block w-full text-center text-sm font-medium py-2 rounded-lg transition-colors ${
                   plan.highlight
                     ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -343,7 +349,7 @@ export default function Home() {
                 }`}
               >
                 申し込む
-              </a>
+              </button>
             </div>
           ))}
         </div>

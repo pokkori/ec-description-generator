@@ -5,7 +5,7 @@ const PLANS = [
     name: "スタンダード",
     price: "¥980",
     limit: "50件/月",
-    gumroadUrl: "https://gumroad.com/l/REPLACE_BASIC",
+    stripeKey: "standard",
     highlight: false,
     features: ["商品説明文生成", "楽天・Amazon対応", "キーワード自動抽出"],
   },
@@ -13,7 +13,7 @@ const PLANS = [
     name: "ビジネス",
     price: "¥2,980",
     limit: "500件/月",
-    gumroadUrl: "https://gumroad.com/l/REPLACE_PRO",
+    stripeKey: "business",
     highlight: true,
     features: ["スタンダードの全機能", "CSV一括生成", "優先サポート"],
   },
@@ -21,7 +21,7 @@ const PLANS = [
     name: "エンタープライズ",
     price: "¥9,800",
     limit: "無制限",
-    gumroadUrl: "https://gumroad.com/l/REPLACE_BUSINESS",
+    stripeKey: "enterprise",
     highlight: false,
     features: ["ビジネスの全機能", "APIアクセス", "専用サポート"],
   },
@@ -186,10 +186,8 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <a
-                  href={plan.gumroadUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href={`/api/stripe/checkout?plan=${plan.stripeKey}`}
                   className={`block w-full text-center text-sm font-medium py-2.5 rounded-lg transition-colors ${
                     plan.highlight
                       ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -197,7 +195,7 @@ export default function LandingPage() {
                   }`}
                 >
                   申し込む
-                </a>
+                </Link>
               </div>
             ))}
           </div>
