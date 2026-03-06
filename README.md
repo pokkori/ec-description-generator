@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI商品説明文ジェネレーター
 
-## Getting Started
+> 商品名と特徴を入力するだけで、楽天・Amazon向けのSEO最適化された商品説明文を瞬時に生成するSaaSサービス
 
-First, run the development server:
+**本番URL**: https://ec-description-generator.vercel.app
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## サービス概要
+
+楽天市場・Amazon出品者向けに、商品説明文をClaude Haiku AIが30秒で自動生成。
+SEOキーワード自動抽出・キャッチコピー・詳細説明文・箇条書き特徴が一括出力。
+
+## 料金プラン
+
+| プラン | 価格 | 制限 |
+|--------|------|------|
+| お試し | 無料 | 3回まで |
+| スタンダード | ¥980/月 | 50件/月 |
+| ビジネス | ¥2,980/月 | 500件/月 |
+| エンタープライズ | ¥9,800/月 | 無制限 |
+
+## 技術スタック
+
+- **フレームワーク**: Next.js 14 (App Router)
+- **言語**: TypeScript
+- **スタイル**: Tailwind CSS
+- **AI**: Anthropic Claude Haiku (claude-haiku-4-5-20251001)
+- **デプロイ**: Vercel
+- **決済**: Gumroad（予定）
+- **アナリティクス**: Vercel Analytics
+
+## ディレクトリ構成
+
+```
+ec-description-generator/
+├── app/
+│   ├── page.tsx          # LP（ランディングページ）
+│   ├── layout.tsx        # レイアウト・メタデータ
+│   ├── tool/
+│   │   └── page.tsx      # 生成画面（フォーム・結果表示）
+│   └── api/
+│       └── generate/
+│           └── route.ts  # Claude API呼び出し・レート制限・Cookie管理
+├── .env.local            # ANTHROPIC_API_KEY（Vercelに設定済み）
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## セキュリティ・制限
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **使用制限**: Cookieベースでサーバー側管理（3回まで無料）
+- **レート制限**: 1分間10リクエストまで/IP
+- **エラーハンドリング**: API障害・タイムアウト対応済み
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 環境変数
 
-## Learn More
+| 変数名 | 説明 |
+|--------|------|
+| `ANTHROPIC_API_KEY` | Anthropic APIキー |
 
-To learn more about Next.js, take a look at the following resources:
+## ローカル起動
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+echo "ANTHROPIC_API_KEY=your_key" > .env.local
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## デプロイ
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npx vercel --prod
+```
