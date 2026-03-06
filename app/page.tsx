@@ -228,6 +228,7 @@ export default function LandingPage() {
             <Link href="/blog/rakuten-description" className="hover:text-gray-600">楽天商品説明文の書き方</Link>
             <Link href="/blog/amazon-description" className="hover:text-gray-600">Amazon商品説明文のコツ</Link>
             <Link href="/blog/ec-description-template" className="hover:text-gray-600">商品説明文テンプレート</Link>
+            <Link href="/privacy" className="hover:text-gray-600">プライバシーポリシー</Link>
           </div>
         </div>
       </footer>
