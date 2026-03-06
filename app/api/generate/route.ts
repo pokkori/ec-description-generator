@@ -32,6 +32,8 @@ export async function POST(req: NextRequest) {
   if (!productName || !features) {
     return NextResponse.json({ error: "商品名と特徴は必須です" }, { status: 400 });
   }
+  if (productName.length > 200) return NextResponse.json({ error: "商品名は200文字以内で入力してください" }, { status: 400 });
+  if (features.length > 1000) return NextResponse.json({ error: "特徴は1000文字以内で入力してください" }, { status: 400 });
 
   const platformGuide =
     platform === "rakuten"
@@ -68,7 +70,7 @@ ${platformGuide}
     const text = message.content[0].type === "text" ? message.content[0].text : "";
     const newCount = cookieCount + 1;
     const res = NextResponse.json({ result: text, count: newCount });
-    res.cookies.set(COOKIE_KEY, String(newCount), { maxAge: 60 * 60 * 24 * 30, sameSite: "lax" });
+    res.cookies.set(COOKIE_KEY, String(newCount), { maxAge: 60 * 60 * 24 * 30, sameSite: "lax", httpOnly: true, secure: true });
     return res;
   } catch (err) {
     console.error(err);
