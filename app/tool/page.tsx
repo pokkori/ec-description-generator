@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-type Platform = "rakuten" | "amazon";
+type Platform = "rakuten" | "amazon" | "yahoo" | "mercari";
 
 const FREE_LIMIT = 3;
 const STORAGE_KEY = "ec_gen_count";
@@ -157,7 +157,7 @@ export default function Home() {
   };
 
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    "楽天・Amazon向けのAI商品説明文ジェネレーターが便利すぎる！無料で3回試せます✨\nhttps://ec-description-generator.vercel.app"
+    "楽天・Amazon・Yahoo!・メルカリ対応のAI商品説明文ジェネレーターが便利すぎる！タイトル案・Q&A・SEOキーワードも自動生成。無料で3回試せます✨\nhttps://ec-description-generator.vercel.app"
   )}`;
 
   return (
@@ -191,19 +191,24 @@ export default function Home() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               販売プラットフォーム
             </label>
-            <div className="flex gap-3">
-              {(["rakuten", "amazon"] as Platform[]).map((p) => (
+            <div className="grid grid-cols-2 gap-2">
+              {([
+                { value: "rakuten", label: "楽天市場" },
+                { value: "amazon", label: "Amazon.co.jp" },
+                { value: "yahoo", label: "Yahoo!ショッピング" },
+                { value: "mercari", label: "メルカリ" },
+              ] as { value: Platform; label: string }[]).map((p) => (
                 <button
-                  key={p}
+                  key={p.value}
                   type="button"
-                  onClick={() => setPlatform(p)}
-                  className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                    platform === p
+                  onClick={() => setPlatform(p.value)}
+                  className={`py-2 rounded-lg border text-sm font-medium transition-colors ${
+                    platform === p.value
                       ? "bg-blue-600 text-white border-blue-600"
                       : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
                   }`}
                 >
-                  {p === "rakuten" ? "楽天市場" : "Amazon.co.jp"}
+                  {p.label}
                 </button>
               ))}
             </div>
