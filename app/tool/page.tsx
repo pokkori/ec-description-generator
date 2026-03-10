@@ -1,5 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
+import PayjpModal from "@/components/PayjpModal";
+
+const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
 type Platform = "rakuten" | "amazon" | "yahoo" | "mercari";
 
@@ -40,11 +43,7 @@ function parseResult(text: string): ParsedResult {
   return { sections, raw: text };
 }
 
-async function startCheckout(plan: string) {
-  const res = await fetch("/api/stripe/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan }) });
-  const { url } = await res.json();
-  if (url) window.location.href = url;
-}
+// startCheckout は PayjpModal で処理するため削除済み
 
 function CopyButton({ text, label = "コピー" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
@@ -95,7 +94,7 @@ function ResultTabs({ parsed }: { parsed: ParsedResult }) {
   );
 }
 
-function PaywallModal({ onClose }: { onClose: () => void }) {
+function PaywallModal({ onClose, onStartPayjp }: { onClose: () => void; onStartPayjp: (plan: string) => void }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
       <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
@@ -110,7 +109,7 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
             { name: "ビジネス", price: "¥2,980/月", limit: "500件/月・最大5商品まとめ生成", key: "business", highlight: true },
             { name: "エンタープライズ", price: "¥9,800/月", limit: "無制限・まとめ生成10商品一括", key: "enterprise", highlight: false },
           ].map(p => (
-            <button key={p.name} onClick={() => startCheckout(p.key)}
+            <button key={p.name} onClick={() => onStartPayjp(p.key)}
               className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border transition-colors text-left ${p.highlight ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700" : "bg-white text-gray-800 border-gray-200 hover:border-blue-400"}`}>
               <div>
                 <div className="font-semibold text-sm">{p.name}</div>
@@ -179,6 +178,8 @@ export default function ECTool() {
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [usageCount, setUsageCount] = useState(0);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showPayjp, setShowPayjp] = useState(false);
+  const [payjpPlan, setPayjpPlan] = useState("standard");
   const [error, setError] = useState("");
 
   useEffect(() => { setUsageCount(parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10)); }, []);
@@ -239,7 +240,16 @@ export default function ECTool() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} />}
+      {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} onStartPayjp={(plan) => { setPayjpPlan(plan); setShowPaywall(false); setShowPayjp(true); }} />}
+      {showPayjp && (
+        <PayjpModal
+          publicKey={PAYJP_PUBLIC_KEY}
+          planLabel={payjpPlan === "enterprise" ? "エンタープライズプラン ¥9,800/月" : payjpPlan === "business" ? "ビジネスプラン ¥2,980/月" : "スタンダードプラン ¥980/月"}
+          plan={payjpPlan}
+          onSuccess={() => { setShowPayjp(false); window.location.reload(); }}
+          onClose={() => setShowPayjp(false)}
+        />
+      )}
 
       <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
