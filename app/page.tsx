@@ -18,7 +18,7 @@ const PLANS = [
   },
   {
     name: "ビジネス",
-    price: "¥2,980",
+    price: "¥4,980",
     limit: "500件/月",
     stripeKey: "business",
     highlight: true,
@@ -183,7 +183,7 @@ export default function LandingPage() {
                 <li className="flex gap-2"><span>✅</span>1商品の説明文が30秒</li>
                 <li className="flex gap-2"><span>✅</span>楽天・Amazon・Yahoo!同時生成</li>
                 <li className="flex gap-2"><span>✅</span>SEOキーワードも自動で挿入</li>
-                <li className="flex gap-2"><span>✅</span>100商品でも月¥2,980で対応</li>
+                <li className="flex gap-2"><span>✅</span>100商品でも月¥4,980で対応</li>
               </ul>
             </div>
           </div>

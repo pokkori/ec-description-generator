@@ -106,7 +106,7 @@ function PaywallModal({ onClose, onStartPayjp }: { onClose: () => void; onStartP
         <div className="space-y-3 mb-5">
           {[
             { name: "スタンダード", price: "¥980/月", limit: "50件/月・単品生成", key: "standard", highlight: false },
-            { name: "ビジネス", price: "¥2,980/月", limit: "500件/月・最大5商品まとめ生成", key: "business", highlight: true },
+            { name: "ビジネス", price: "¥4,980/月", limit: "500件/月・最大5商品まとめ生成", key: "business", highlight: true },
             { name: "エンタープライズ", price: "¥9,800/月", limit: "無制限・まとめ生成10商品一括", key: "enterprise", highlight: false },
           ].map(p => (
             <button key={p.name} onClick={() => onStartPayjp(p.key)}
@@ -244,7 +244,7 @@ export default function ECTool() {
       {showPayjp && (
         <PayjpModal
           publicKey={PAYJP_PUBLIC_KEY}
-          planLabel={payjpPlan === "enterprise" ? "エンタープライズプラン ¥9,800/月" : payjpPlan === "business" ? "ビジネスプラン ¥2,980/月" : "スタンダードプラン ¥980/月"}
+          planLabel={payjpPlan === "enterprise" ? "エンタープライズプラン ¥9,800/月" : payjpPlan === "business" ? "ビジネスプラン ¥4,980/月" : "スタンダードプラン ¥980/月"}
           plan={payjpPlan}
           onSuccess={() => { setShowPayjp(false); window.location.reload(); }}
           onClose={() => setShowPayjp(false)}
