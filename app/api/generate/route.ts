@@ -4,7 +4,11 @@ import { isActiveSubscription } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+let _client: Anthropic | null = null;
+function getClient(): Anthropic {
+  if (!_client) _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  return _client;
+}
 const FREE_LIMIT = 3;
 const COOKIE_KEY = "ec_use_count";
 const APP_ID = "ec";
@@ -29,7 +33,8 @@ export async function POST(req: NextRequest) {
   if (email) {
     isPremium = await isActiveSubscription(email, APP_ID);
   } else {
-    isPremium = req.cookies.get("stripe_premium")?.value === "1" || req.cookies.get("premium")?.value === "1";
+    const pv = req.cookies.get("premium")?.value;
+    isPremium = pv === "1" || pv === "biz" || pv === "ent";
   }
   const cookieCount = parseInt(req.cookies.get(COOKIE_KEY)?.value || "0");
   if (!isPremium && cookieCount >= FREE_LIMIT) {
@@ -55,7 +60,7 @@ export async function POST(req: NextRequest) {
       ? "メルカリ向け：コンパクトで親しみやすい文体。状態・サイズ・発送方法を明確に。値段交渉への対応方針も含める。"
       : "Amazon.co.jp向け：Amazonのアルゴリズムに最適化。箇条書き5点で主な特徴を端的に。後半に詳細説明。A+コンテンツ向け構成。";
 
-  const prompt = `あなたはEC売上改善の専門コンサルタントです。年間1,000件以上の商品ページを最適化し、平均CVR 40%改善を実現してきた実績を持ちます。以下の商品情報をもとに、即戦力となる商品説明文セットを生成してください。
+  const prompt = `あなたはEC売上改善の専門コンサルタントです。EC業界の最適化方針に基づき、以下の商品情報をもとに、即戦力となる商品説明文セットを生成してください。
 
 【プラットフォーム】${platform === "rakuten" ? "楽天市場" : platform === "yahoo" ? "Yahoo!ショッピング" : platform === "mercari" ? "メルカリ" : "Amazon.co.jp"}
 【対応方針】${platformGuide}
@@ -110,7 +115,7 @@ A3:
 （1〜2行で、なぜこの商品を選ぶべきかを明確に）`;
 
   try {
-    const message = await client.messages.create({
+    const message = await getClient().messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 2500,
       messages: [{ role: "user", content: prompt }],
