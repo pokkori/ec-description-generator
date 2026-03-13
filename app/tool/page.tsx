@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import PayjpModal from "@/components/PayjpModal";
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
@@ -181,8 +182,17 @@ export default function ECTool() {
   const [showPayjp, setShowPayjp] = useState(false);
   const [payjpPlan, setPayjpPlan] = useState("standard");
   const [error, setError] = useState("");
+  const searchParams = useSearchParams();
 
-  useEffect(() => { setUsageCount(parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10)); }, []);
+  useEffect(() => {
+    setUsageCount(parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10));
+    // LPの料金プランボタンから直接決済フローに入る
+    const plan = searchParams.get("plan");
+    if (plan === "standard" || plan === "business" || plan === "enterprise") {
+      setPayjpPlan(plan);
+      setShowPayjp(true);
+    }
+  }, [searchParams]);
 
   const remaining = Math.max(0, FREE_LIMIT - usageCount);
   const isLimitReached = usageCount >= FREE_LIMIT;

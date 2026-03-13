@@ -239,7 +239,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <Link
-                  href="/tool"
+                  href={`/tool?plan=${plan.stripeKey}`}
                   className={`block w-full text-center text-sm font-bold py-3 rounded-xl transition-colors ${
                     plan.highlight
                       ? "bg-blue-600 text-white hover:bg-blue-700"
