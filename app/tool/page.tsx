@@ -256,7 +256,7 @@ export default function ECTool() {
           publicKey={PAYJP_PUBLIC_KEY}
           planLabel={payjpPlan === "enterprise" ? "エンタープライズプラン ¥9,800/月" : payjpPlan === "business" ? "ビジネスプラン ¥4,980/月" : "スタンダードプラン ¥980/月"}
           plan={payjpPlan}
-          onSuccess={() => { setShowPayjp(false); window.location.reload(); }}
+          onSuccess={() => { setShowPayjp(false); setUsageCount(0); localStorage.removeItem(STORAGE_KEY); }}
           onClose={() => setShowPayjp(false)}
         />
       )}
