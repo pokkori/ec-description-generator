@@ -107,7 +107,7 @@ function PaywallModal({ onClose, onStartPayjp }: { onClose: () => void; onStartP
           {[
             { name: "スタンダード", price: "¥980/月", limit: "50件/月・単品生成", key: "standard", highlight: false },
             { name: "ビジネス", price: "¥4,980/月", limit: "500件/月・最大5商品まとめ生成", key: "business", highlight: true },
-            { name: "エンタープライズ", price: "¥9,800/月", limit: "無制限・まとめ生成10商品一括", key: "enterprise", highlight: false },
+            { name: "エンタープライズ", price: "¥9,800/月", limit: "無制限・まとめ生成（上限なし）", key: "enterprise", highlight: false },
           ].map(p => (
             <button key={p.name} onClick={() => onStartPayjp(p.key)}
               className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border transition-colors text-left ${p.highlight ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700" : "bg-white text-gray-800 border-gray-200 hover:border-blue-400"}`}>
@@ -358,7 +358,7 @@ export default function ECTool() {
                       </button>
                     ))}
                     <button onClick={downloadAll} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors">
-                      ⬇ 全文DL
+                      ⬇ まとめてDL
                     </button>
                   </div>
                 )}
