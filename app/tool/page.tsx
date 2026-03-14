@@ -5,7 +5,7 @@ import PayjpModal from "@/components/PayjpModal";
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
-type Platform = "rakuten" | "amazon" | "yahoo" | "mercari";
+type Platform = "rakuten" | "amazon" | "yahoo" | "mercari" | "base";
 
 const FREE_LIMIT = 3;
 const STORAGE_KEY = "ec_gen_count";
@@ -178,6 +178,7 @@ export default function ECTool() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [usageCount, setUsageCount] = useState(0);
+  const [ngWords, setNgWords] = useState<string[]>([]);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showPayjp, setShowPayjp] = useState(false);
   const [payjpPlan, setPayjpPlan] = useState("standard");
@@ -206,12 +207,12 @@ export default function ECTool() {
   };
   const removeProduct = (id: number) => setProducts(ps => ps.filter(p => p.id !== id));
 
-  const generateOne = async (product: ProductInput, count: number): Promise<{ result?: ParsedResult; error?: string; newCount: number }> => {
+  const generateOne = async (product: ProductInput, count: number): Promise<{ result?: ParsedResult; error?: string; newCount: number; ngWordsFound?: string[] }> => {
     const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...product, platform }) });
     if (res.status === 429) return { error: "LIMIT", newCount: count };
     const data = await res.json();
     if (!res.ok) return { error: data.error || "エラーが発生しました", newCount: count };
-    return { result: parseResult(data.result || ""), newCount: data.count ?? count + 1 };
+    return { result: parseResult(data.result || ""), newCount: data.count ?? count + 1, ngWordsFound: data.ngWordsFound ?? [] };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -223,16 +224,19 @@ export default function ECTool() {
 
     let currentCount = usageCount;
     const newResults: ProductResult[] = [];
+    const allNgWords: string[] = [];
 
     for (let i = 0; i < validProducts.length; i++) {
       setProgress({ current: i + 1, total: validProducts.length });
-      const { result, error: err, newCount } = await generateOne(validProducts[i], currentCount);
+      const { result, error: err, newCount, ngWordsFound } = await generateOne(validProducts[i], currentCount);
       currentCount = newCount;
       localStorage.setItem(STORAGE_KEY, String(currentCount));
       setUsageCount(currentCount);
       if (err === "LIMIT") { setShowPaywall(true); break; }
+      if (ngWordsFound) allNgWords.push(...ngWordsFound.filter(w => !allNgWords.includes(w)));
       newResults.push({ product: validProducts[i], parsed: result!, error: err });
     }
+    setNgWords(allNgWords);
 
     setResults(newResults);
     setActiveResult(0);
@@ -297,14 +301,18 @@ export default function ECTool() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">販売プラットフォーム（全商品共通）</label>
                 <div className="grid grid-cols-2 gap-2">
                   {([
-                    { value: "rakuten", label: "楽天市場" },
-                    { value: "amazon", label: "Amazon.co.jp" },
-                    { value: "yahoo", label: "Yahoo!ショッピング" },
-                    { value: "mercari", label: "メルカリ" },
-                  ] as { value: Platform; label: string }[]).map(p => (
+                    { value: "rakuten", label: "楽天市場", icon: "🛒", hint: "感情訴求・特典強調・読みやすい長文" },
+                    { value: "amazon", label: "Amazon.co.jp", icon: "📦", hint: "検索SEO重視・スペック詳細・箇条書き" },
+                    { value: "yahoo", label: "Yahoo!ショッピング", icon: "🛍️", hint: "価格訴求・レビュー連動・シンプル" },
+                    { value: "mercari", label: "メルカリ", icon: "♻️", hint: "状態記載・簡潔・信頼感重視" },
+                    { value: "base", label: "BASE / Shopify", icon: "🏪", hint: "ブランドストーリー・世界観・感性訴求" },
+                  ] as { value: Platform; label: string; icon: string; hint: string }[]).map(p => (
                     <button key={p.value} type="button" onClick={() => setPlatform(p.value)}
-                      className={`py-2 rounded-lg border text-sm font-medium transition-colors ${platform === p.value ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"}`}>
-                      {p.label}
+                      className={`py-2 px-3 rounded-lg border text-sm font-medium transition-colors text-left ${platform === p.value ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"}`}>
+                      <span className="mr-1">{p.icon}</span>{p.label}
+                      {platform === p.value && (
+                        <span className="block text-xs font-normal text-blue-100 mt-0.5">{p.hint}</span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -340,6 +348,19 @@ export default function ECTool() {
           {/* 右：結果エリア */}
           <div className="flex flex-col">
             <label className="text-sm font-medium text-gray-700 mb-2">生成結果</label>
+
+            {/* 禁止ワードチェック結果 */}
+            {ngWords.length > 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-3">
+                <p className="text-red-700 font-bold text-sm mb-2">⚠️ 景表法・薬機法 注意ワード検出</p>
+                <div className="flex flex-wrap gap-2">
+                  {ngWords.map(w => (
+                    <span key={w} className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">{w}</span>
+                  ))}
+                </div>
+                <p className="text-xs text-red-500 mt-2">これらのワードは薬機法・景品表示法に抵触する可能性があります。表現を修正してください。</p>
+              </div>
+            )}
 
             {loading ? (
               <div className="bg-white border border-gray-200 rounded-xl flex items-center justify-center min-h-[420px]">

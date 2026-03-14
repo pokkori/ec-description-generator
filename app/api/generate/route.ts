@@ -51,6 +51,23 @@ export async function POST(req: NextRequest) {
   if (productName.length > 200) return NextResponse.json({ error: "商品名は200文字以内で入力してください" }, { status: 400 });
   if (features.length > 1000) return NextResponse.json({ error: "特徴は1000文字以内で入力してください" }, { status: 400 });
 
+  // 景表法・薬機法 禁止ワードリスト
+  const NG_WORDS = [
+    "最高", "No.1", "NO.1", "no.1", "日本一", "世界一", "絶対", "完全", "永久",
+    "治る", "治療", "効果があります", "医師推奨", "100%", "必ず", "絶対に",
+    "最強", "唯一", "奇跡", "夢のような", "副作用なし", "即効", "劇的",
+  ];
+  const inputText = `${productName} ${features}`;
+  const ngWordsFound = NG_WORDS.filter(w => inputText.includes(w));
+
+  const PLATFORM_HINTS: Record<string, string> = {
+    amazon: "Amazon向け: 検索SEOを意識したキーワード多用。箇条書きで仕様・特徴を明確に。ASIN対応フォーマット。",
+    rakuten: "楽天市場向け: 感情訴求・お得感強調。「送料無料」「ポイント還元」などの特典を冒頭に。読みやすい長文。",
+    yahoo: "Yahoo!ショッピング向け: 価格の安さとコスパを前面に。簡潔で分かりやすい説明。",
+    mercari: "メルカリ向け: 商品の状態（新品/未使用/中古）を明記。簡潔で信頼感のある説明。",
+    base: "BASE/Shopify向け: ブランドの世界観・ストーリーを重視。感性に訴えかける表現。",
+  };
+
   const platformGuide =
     platform === "rakuten"
       ? "楽天市場向け：検索キーワードを自然に文章に盛り込む。信頼感・安心感・お買い得感を強調。絵文字や記号（★◆■）を適度に使い視認性を上げる。スマホ表示を意識した改行。"
@@ -58,6 +75,8 @@ export async function POST(req: NextRequest) {
       ? "Yahoo!ショッピング向け：シンプルで読みやすい文体。ポイント還元・送料無料などのお得感を強調。検索ワードを冒頭に自然に含める。"
       : platform === "mercari"
       ? "メルカリ向け：コンパクトで親しみやすい文体。状態・サイズ・発送方法を明確に。値段交渉への対応方針も含める。"
+      : platform === "base"
+      ? "BASE/Shopify向け：ブランドのストーリー・世界観を大切にした文体。感性に訴えかけるリッチな表現。購入者との共感を重視。ハッシュタグ提案も含める。"
       : "Amazon.co.jp向け：Amazonのアルゴリズムに最適化。箇条書き5点で主な特徴を端的に。後半に詳細説明。A+コンテンツ向け構成。";
 
   const prompt = `あなたはEC売上改善の専門コンサルタントです。EC業界の最適化方針に基づき、以下の商品情報をもとに、即戦力となる商品説明文セットを生成してください。
@@ -122,7 +141,7 @@ A3:
     });
     const text = message.content[0].type === "text" ? message.content[0].text : "";
     const newCount = cookieCount + 1;
-    const res = NextResponse.json({ result: text, count: newCount });
+    const res = NextResponse.json({ result: text, count: newCount, ngWordsFound });
     res.cookies.set(COOKIE_KEY, String(newCount), { maxAge: 60 * 60 * 24 * 30, sameSite: "lax", httpOnly: true, secure: true });
     return res;
   } catch (err) {

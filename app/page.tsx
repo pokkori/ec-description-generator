@@ -43,13 +43,18 @@ const PROBLEMS = [
 
 const FEATURES = [
   {
-    title: "楽天・Amazon・Yahoo!全対応",
-    desc: "プラットフォームごとに最適化した説明文を同時生成。それぞれの文字数制限・HTMLタグ対応済み。",
+    title: "5大モール別最適化",
+    desc: "Amazon・楽天・Yahoo!・メルカリ・BASEそれぞれのアルゴリズムと読者心理に合わせた説明文を生成。汎用AIとの決定的な差別化。",
     icon: "🛒",
   },
   {
+    title: "景表法・薬機法 自動チェック",
+    desc: "生成した説明文に「最高」「No.1」など薬機法・景表法に抵触するワードが含まれていないかAIが自動チェック。安心して使えます。",
+    icon: "⚖️",
+  },
+  {
     title: "SEOキーワード自動抽出",
-    desc: "検索で上位表示されやすいキーワードを10個自動抽出・挿入。検索流入を増やします。",
+    desc: "検索で上位表示されやすいキーワードを15個自動抽出・挿入。検索流入を増やします。",
     icon: "🔍",
   },
   {
@@ -90,7 +95,7 @@ export default function LandingPage() {
       {/* ヒーロー */}
       <section className="max-w-5xl mx-auto px-6 py-20 text-center">
         <div className="inline-block bg-blue-50 text-blue-700 text-xs font-medium px-3 py-1 rounded-full mb-6">
-          楽天・Amazon・Yahoo!出品者向け
+          楽天・Amazon・Yahoo!・メルカリ・BASE出品者向け
         </div>
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
           商品説明文を<span className="text-blue-600">30秒</span>で<br />
@@ -150,8 +155,8 @@ export default function LandingPage() {
       {/* 機能 */}
       <section className="py-16">
         <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">3つの特徴</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">4つの特徴</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURES.map((f) => (
               <div key={f.title} className="text-center p-6 bg-gray-50 rounded-2xl">
                 <div className="text-4xl mb-4">{f.icon}</div>
