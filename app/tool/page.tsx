@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import PayjpModal from "@/components/PayjpModal";
 
@@ -169,7 +169,7 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
   );
 }
 
-export default function ECTool() {
+function ECToolInner() {
   const [platform, setPlatform] = useState<Platform>("rakuten");
   const [mode, setMode] = useState<"single" | "bulk">("single");
   const [products, setProducts] = useState<ProductInput[]>([newProduct()]);
@@ -432,5 +432,13 @@ export default function ECTool() {
         <a href="/privacy" className="hover:underline">プライバシーポリシー</a>
       </footer>
     </main>
+  );
+}
+
+export default function ECTool() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" /></div>}>
+      <ECToolInner />
+    </Suspense>
   );
 }
