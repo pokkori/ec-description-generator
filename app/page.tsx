@@ -2,9 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI商品説明文ジェネレーター｜楽天・Amazon・Yahoo!対応｜30秒で自動生成",
-  description: "商品名と特徴を入力するだけ。AIがSEO最適化された楽天・Amazon・Yahoo!向け商品説明文を30秒で生成。キャッチコピー・SEOキーワード10個・説明文がセットで出力。無料3回試せます。",
-  keywords: "商品説明文 自動生成,楽天 商品説明文,Amazon 商品説明文,EC 商品説明 AI,商品説明文 テンプレート,楽天市場 説明文 書き方",
+  title: "AI商品説明文ジェネレーター｜Amazon・楽天・Yahoo!ショッピング対応｜SEOキーワード自動挿入",
+  description: "商品名を入れるだけで売れる説明文が完成。Amazon・楽天・Yahoo!ショッピング・メルカリ各モール最適化+SEOキーワード自動挿入。外注不要・無料3回試せます。",
+  keywords: "商品説明文 自動生成,楽天 商品説明文,Amazon 商品説明文,Yahoo ショッピング 説明文,EC 商品説明 AI,SEOキーワード 自動挿入,商品説明文 テンプレート",
 };
 
 const PLANS = [
@@ -87,7 +87,7 @@ export default function LandingPage() {
             href="/tool"
             className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            無料で試す
+            無料で説明文を生成する
           </Link>
         </div>
       </nav>
@@ -95,15 +95,17 @@ export default function LandingPage() {
       {/* ヒーロー */}
       <section className="max-w-5xl mx-auto px-6 py-20 text-center">
         <div className="inline-block bg-blue-50 text-blue-700 text-xs font-medium px-3 py-1 rounded-full mb-6">
-          楽天・Amazon・Yahoo!・メルカリ・BASE出品者向け
+          Amazon・楽天・Yahoo!ショッピング・メルカリ・BASE 対応
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
-          商品説明文を<span className="text-blue-600">30秒</span>で<br />
-          SEO最適化して自動生成
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+          商品名を入れるだけで、<br />
+          <span className="text-blue-600">売れる説明文が完成。</span>
         </h1>
-        <p className="text-lg text-gray-500 mb-4 max-w-xl mx-auto">
-          商品名と特徴を入力するだけ。キャッチコピー・説明文・SEOキーワード10個が
-          セットで即時生成。外注不要・知識不要。
+        <p className="text-lg font-semibold text-gray-700 mb-3 max-w-xl mx-auto">
+          Amazon・楽天・Yahoo!ショッピング — 各モール最適化に対応。
+        </p>
+        <p className="text-base text-gray-500 mb-4 max-w-xl mx-auto">
+          SEOキーワードを自動挿入。検索で見つかって、読んで買いたくなるコピーを30秒で生成。外注費¥3,000/商品が不要に。
         </p>
         <div className="flex justify-center gap-6 text-sm text-gray-400 mb-8">
           <span>✓ 登録不要</span>
@@ -114,7 +116,7 @@ export default function LandingPage() {
           href="/tool"
           className="inline-block bg-blue-600 text-white text-base font-bold px-8 py-4 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
         >
-          無料で3回試す →
+          無料で説明文を生成する →
         </Link>
       </section>
 
@@ -264,15 +266,16 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="bg-blue-600 py-16 text-center">
         <div className="max-w-5xl mx-auto px-6">
+          <p className="text-blue-200 text-sm font-semibold mb-2">Amazon・楽天・Yahoo!ショッピング対応 · SEOキーワード自動挿入</p>
           <h2 className="text-2xl font-bold text-white mb-4">
-            今すぐ無料で試してみてください
+            商品名を入れるだけ — 売れる説明文を無料で作る
           </h2>
           <p className="text-blue-100 text-sm mb-8">登録不要・クレジットカード不要。3回まで無料で使えます。</p>
           <Link
             href="/tool"
             className="inline-block bg-white text-blue-600 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
           >
-            無料で3回試す →
+            無料で説明文を生成する →
           </Link>
         </div>
       </section>

@@ -211,7 +211,7 @@ function ECToolInner() {
     const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...product, platform }) });
     if (res.status === 429) return { error: "LIMIT", newCount: count };
     const data = await res.json();
-    if (!res.ok) return { error: data.error || "エラーが発生しました", newCount: count };
+    if (!res.ok) return { error: data.error || "少し時間を置いてもう一度お試しください 🙏", newCount: count };
     return { result: parseResult(data.result || ""), newCount: data.count ?? count + 1, ngWordsFound: data.ngWordsFound ?? [] };
   };
 
@@ -250,6 +250,11 @@ function ECToolInner() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = "ec_descriptions.txt"; a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleRegenerate = () => {
+    const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+    handleSubmit(fakeEvent);
   };
 
   return (
@@ -396,7 +401,16 @@ function ECToolInner() {
                 {results[activeResult]?.error ? (
                   <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600">{results[activeResult].error}</div>
                 ) : results[activeResult]?.parsed ? (
-                  <ResultTabs parsed={results[activeResult].parsed} />
+                  <>
+                    <ResultTabs parsed={results[activeResult].parsed} />
+                    <button
+                      onClick={handleRegenerate}
+                      disabled={loading}
+                      className="mt-2 text-sm text-gray-500 underline hover:text-gray-700 disabled:opacity-40"
+                    >
+                      🔄 別のパターンで再生成
+                    </button>
+                  </>
                 ) : null}
               </div>
             ) : (
