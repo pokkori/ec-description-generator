@@ -12,7 +12,7 @@ const PLANS = [
     name: "スタンダード",
     price: "¥980",
     limit: "50件/月",
-    stripeKey: "standard",
+    planKey: "standard",
     highlight: false,
     features: ["商品説明文生成", "楽天・Amazon・Yahoo!対応", "SEOキーワード自動抽出", "コピー機能"],
   },
@@ -20,7 +20,7 @@ const PLANS = [
     name: "ビジネス",
     price: "¥4,980",
     limit: "500件/月",
-    stripeKey: "business",
+    planKey: "business",
     highlight: true,
     features: ["スタンダードの全機能", "一括生成（最大5商品）", "まとめてダウンロード", "優先サポート"],
   },
@@ -28,7 +28,7 @@ const PLANS = [
     name: "エンタープライズ",
     price: "¥9,800",
     limit: "無制限",
-    stripeKey: "enterprise",
+    planKey: "enterprise",
     highlight: false,
     features: ["ビジネスの全機能", "APIアクセス", "カスタムテンプレート", "専任サポート担当"],
   },
@@ -247,7 +247,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <Link
-                  href={`/tool?plan=${plan.stripeKey}`}
+                  href={`/tool?plan=${plan.planKey}`}
                   className={`block w-full text-center text-sm font-bold py-3 rounded-xl transition-colors ${
                     plan.highlight
                       ? "bg-blue-600 text-white hover:bg-blue-700"
