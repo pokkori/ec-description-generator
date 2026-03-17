@@ -56,7 +56,7 @@ function CopyButton({ text, label = "コピー" }: { text: string; label?: strin
   );
 }
 
-function ResultTabs({ parsed }: { parsed: ParsedResult }) {
+function ResultTabs({ parsed, productName }: { parsed: ParsedResult; productName?: string }) {
   const [activeTab, setActiveTab] = useState(0);
   const section = parsed.sections[activeTab];
 
@@ -67,6 +67,10 @@ function ResultTabs({ parsed }: { parsed: ParsedResult }) {
     const w = window.open(url, "_blank");
     w?.addEventListener("load", () => { w.print(); URL.revokeObjectURL(url); });
   };
+
+  const shareText = productName
+    ? `「${productName}」の商品説明文をAIで自動生成！SEOキーワード付き・楽天Amazon対応の文章が30秒で完成。 https://ec-description-generator.vercel.app #EC #ネットショップ #AI文章生成`
+    : `EC説明文AIで商品説明を自動生成！SEO対応の文章が数秒で。 https://ec-description-generator.vercel.app #EC #ネットショップ #AI文章生成`;
 
   return (
     <div className="space-y-3">
@@ -91,12 +95,12 @@ function ResultTabs({ parsed }: { parsed: ParsedResult }) {
           印刷・PDF保存
         </button>
         <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("EC説明文AIで商品説明を自動生成！SEO対応の文章が数秒で。 https://ec-description-generator.vercel.app #EC #ネットショップ #AI文章生成")}`}
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs px-3 py-1 rounded-lg bg-sky-500 text-white hover:bg-sky-600 font-medium transition-colors"
         >
-          𝕏 シェア
+          𝕏 AIが作った説明文をシェア
         </a>
       </div>
     </div>
@@ -433,7 +437,7 @@ function ECToolInner() {
                   <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600">{results[activeResult].error}</div>
                 ) : results[activeResult]?.parsed ? (
                   <>
-                    <ResultTabs parsed={results[activeResult].parsed} />
+                    <ResultTabs parsed={results[activeResult].parsed} productName={results[activeResult].product.productName} />
                     <button
                       onClick={handleRegenerate}
                       disabled={loading}
