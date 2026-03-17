@@ -158,16 +158,32 @@ A4:
 競合商品の弱点に触れず、自社商品の強みを前面に出す表現を使うこと。`;
 
   try {
-    const message = await getClient().messages.create({
+    const newCount = cookieCount + 1;
+    const stream = getClient().messages.stream({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 3200,
       messages: [{ role: "user", content: prompt }],
     });
-    const text = message.content[0].type === "text" ? message.content[0].text : "";
-    const newCount = cookieCount + 1;
-    const res = NextResponse.json({ result: text, count: newCount, ngWordsFound });
-    res.cookies.set(COOKIE_KEY, String(newCount), { maxAge: 60 * 60 * 24 * 30, sameSite: "lax", httpOnly: true, secure: true });
-    return res;
+    const encoder = new TextEncoder();
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
+              controller.enqueue(encoder.encode(chunk.delta.text));
+            }
+          }
+          controller.enqueue(encoder.encode(`\nDONE:${JSON.stringify({ count: newCount, ngWordsFound })}`));
+          controller.close();
+        } catch (err) { console.error(err); controller.error(err); }
+      },
+    });
+    const headers: Record<string, string> = {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache",
+      "Set-Cookie": `${COOKIE_KEY}=${newCount}; Max-Age=${60 * 60 * 24 * 30}; SameSite=Lax; HttpOnly; Secure; Path=/`,
+    };
+    return new Response(readable, { headers });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "AI生成中にエラーが発生しました。しばらく待ってから再試行してください。" }, { status: 500 });

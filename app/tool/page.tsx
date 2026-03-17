@@ -210,9 +210,32 @@ function ECToolInner() {
   const generateOne = async (product: ProductInput, count: number): Promise<{ result?: ParsedResult; error?: string; newCount: number; ngWordsFound?: string[] }> => {
     const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...product, platform }) });
     if (res.status === 429) return { error: "LIMIT", newCount: count };
-    const data = await res.json();
-    if (!res.ok) return { error: data.error || "少し時間を置いてもう一度お試しください 🙏", newCount: count };
-    return { result: parseResult(data.result || ""), newCount: data.count ?? count + 1, ngWordsFound: data.ngWordsFound ?? [] };
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      return { error: data.error || "少し時間を置いてもう一度お試しください 🙏", newCount: count };
+    }
+    const reader = res.body?.getReader();
+    const decoder = new TextDecoder();
+    let accumulated = "";
+    let newCount = count + 1;
+    let ngWordsFound: string[] = [];
+    while (reader) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      if (chunk.includes("\nDONE:")) {
+        const idx = chunk.indexOf("\nDONE:");
+        accumulated += chunk.slice(0, idx);
+        try {
+          const meta = JSON.parse(chunk.slice(idx + 6));
+          newCount = meta.count ?? newCount;
+          ngWordsFound = meta.ngWordsFound ?? [];
+        } catch { /* ignore */ }
+      } else {
+        accumulated += chunk;
+      }
+    }
+    return { result: parseResult(accumulated), newCount, ngWordsFound };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
