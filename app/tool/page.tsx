@@ -142,8 +142,8 @@ function ResultTabs({ parsed, productName, platform, rawText }: { parsed: Parsed
   };
 
   const shareText = productName
-    ? `「${productName}」の商品説明文をAIで自動生成！SEOキーワード付き・楽天Amazon対応の文章が30秒で完成。 https://ec-description-generator.vercel.app #EC #ネットショップ #AI文章生成`
-    : `EC説明文AIで商品説明を自動生成！SEO対応の文章が数秒で。 https://ec-description-generator.vercel.app #EC #ネットショップ #AI文章生成`;
+    ? `「${productName}」の商品説明文をAIで生成してみたら、CVR予測スコアまで出てきて驚いた！SEOキーワード・Q&A・競合ポジショニングまで30秒で完成。もう手書きには戻れない。 https://ec-description-generator.vercel.app #EC #ネットショップ #AI文章生成`
+    : `EC説明文AIを試したら商品説明文・タイトル3案・SEOキーワード15個がまとめて生成された！CVR予測スコアも出てきて感動。 https://ec-description-generator.vercel.app #EC #ネットショップ #AI文章生成`;
 
   return (
     <div className="space-y-3">
