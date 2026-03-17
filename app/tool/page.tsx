@@ -91,10 +91,10 @@ function ResultTabs({ parsed }: { parsed: ParsedResult }) {
           印刷・PDF保存
         </button>
         <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("EC説明文をAIで30秒生成！手書き30分→30秒に短縮しました。月480商品でも楽々 → https://ec-description-generator.vercel.app #EC運営 #説明文生成 #AI活用")}`}
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("EC説明文AIで商品説明を自動生成！SEO対応の文章が数秒で。 https://ec-description-generator.vercel.app #EC #ネットショップ #AI文章生成")}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs px-3 py-1 rounded-lg bg-black text-white hover:bg-gray-800 font-medium transition-colors"
+          className="text-xs px-3 py-1 rounded-lg bg-sky-500 text-white hover:bg-sky-600 font-medium transition-colors"
         >
           𝕏 シェア
         </a>

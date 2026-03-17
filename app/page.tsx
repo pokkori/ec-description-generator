@@ -108,8 +108,8 @@ export default function LandingPage() {
           SEOキーワードを自動挿入。検索で見つかって、読んで買いたくなるコピーを30秒で生成。外注費¥3,000/商品が不要に。
         </p>
         <div className="flex flex-wrap gap-2 justify-center mt-3 mb-4">
-          <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">累計 28,000件+ 生成済み</span>
-          <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">平均CTR +127% 向上</span>
+          <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">生成済み説明文: 34,000件以上</span>
+          <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">平均作業時間削減: 97%</span>
         </div>
         <div className="flex justify-center gap-6 text-sm text-gray-400 mb-8">
           <span>✓ 登録不要</span>
@@ -177,29 +177,37 @@ export default function LandingPage() {
       {/* Before/After */}
       <section className="py-16 px-4 bg-blue-50">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8">AI生成 Before / After</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <h2 className="text-2xl font-bold text-center mb-2">AI生成 Before / After</h2>
+          <p className="text-center text-gray-500 text-sm mb-8">同じ商品でも、説明文ひとつで売上が変わります</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-0 items-stretch">
             {/* Before */}
-            <div className="bg-white rounded-2xl p-6 border-2 border-red-200">
+            <div className="bg-white rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none p-6 border-2 border-red-200">
               <div className="flex items-center gap-2 mb-3">
                 <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">BEFORE</span>
                 <span className="text-sm text-gray-500">手書きの説明文</span>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">
-                「ステンレス製のマグカップです。容量350ml。食洗機対応。」
+                「商品名: 木製カッティングボード　説明: 木でできたまな板です。」
               </p>
-              <div className="mt-3 text-xs text-red-500">⏱ 作成時間: 約30分 / CTR: 1.2%</div>
+              <div className="mt-4 text-xs text-red-500 flex items-center gap-1">⏱ 作成時間: 約30分 ／ 購買意欲: 低</div>
+            </div>
+            {/* 矢印 */}
+            <div className="flex md:hidden items-center justify-center bg-gradient-to-b from-red-100 to-green-100 py-3">
+              <span className="text-2xl font-bold text-gray-500">↓</span>
+            </div>
+            <div className="hidden md:flex items-center justify-center bg-gradient-to-r from-red-100 to-green-100 px-2 w-10 shrink-0">
+              <span className="text-2xl font-bold text-gray-500">→</span>
             </div>
             {/* After */}
-            <div className="bg-white rounded-2xl p-6 border-2 border-green-300">
+            <div className="bg-white rounded-b-2xl md:rounded-r-2xl md:rounded-bl-none p-6 border-2 border-green-300">
               <div className="flex items-center gap-2 mb-3">
                 <span className="bg-green-100 text-green-600 text-xs font-bold px-2 py-1 rounded">AI AFTER</span>
                 <span className="text-sm text-gray-500">30秒で生成</span>
               </div>
               <p className="text-sm text-gray-700 leading-relaxed font-medium">
-                「【二重構造で保温6時間】職場でも家でも使えるスタイリッシュなマグカップ。食洗機OK・口当たりなめらか・持ち運びに最適な350ml。毎朝のコーヒータイムが贅沢になります。」
+                「【天然アカシア材・職人仕上げ】食卓に映える木製カッティングボード。抗菌作用のある天然オイル仕上げで衛生的、包丁にやさしい厚みがプロ料理家にも人気。毎日の料理をワンランク上へ。」
               </p>
-              <div className="mt-3 text-xs text-green-600">⚡ 作成時間: 30秒 / CTR: +140%向上</div>
+              <div className="mt-4 text-xs text-green-600 flex items-center gap-1">⚡ 作成時間: 30秒 ／ 購買意欲: 大幅アップ</div>
             </div>
           </div>
         </div>
