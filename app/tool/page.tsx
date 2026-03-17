@@ -85,11 +85,19 @@ function ResultTabs({ parsed }: { parsed: ParsedResult }) {
         </div>
         <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{section.content}</pre>
       </div>
-      <div className="flex gap-2 justify-end">
+      <div className="flex gap-2 justify-end flex-wrap">
         <CopyButton text={parsed.raw} label="全文コピー" />
         <button onClick={handlePrint} className="text-xs px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium">
           印刷・PDF保存
         </button>
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("EC説明文をAIで30秒生成！手書き30分→30秒に短縮しました。月480商品でも楽々 → https://ec-description-generator.vercel.app #EC運営 #説明文生成 #AI活用")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs px-3 py-1 rounded-lg bg-black text-white hover:bg-gray-800 font-medium transition-colors"
+        >
+          𝕏 シェア
+        </a>
       </div>
     </div>
   );
