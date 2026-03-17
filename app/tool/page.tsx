@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import PayjpModal from "@/components/PayjpModal";
+import { track } from '@vercel/analytics';
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
@@ -215,7 +216,7 @@ function PaywallModal({ onClose, onStartPayjp }: { onClose: () => void; onStartP
             { name: "ビジネス", price: "¥4,980/月", limit: "500件/月・最大5商品まとめ生成", key: "business", highlight: true },
             { name: "エンタープライズ", price: "¥9,800/月", limit: "無制限・まとめ生成（上限なし）", key: "enterprise", highlight: false },
           ].map(p => (
-            <button key={p.name} onClick={() => onStartPayjp(p.key)}
+            <button key={p.name} onClick={() => { track('upgrade_click', { service: 'EC説明文生成AI', plan: p.key }); onStartPayjp(p.key); }}
               className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border transition-colors text-left ${p.highlight ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700" : "bg-white text-gray-800 border-gray-200 hover:border-blue-400"}`}>
               <div>
                 <div className="font-semibold text-sm">{p.name}</div>
@@ -345,8 +346,9 @@ function ECToolInner() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLimitReached) { setShowPaywall(true); return; }
+    if (isLimitReached) { track('paywall_shown', { service: 'EC説明文生成AI' }); setShowPaywall(true); return; }
     const validProducts = products.filter(p => p.productName && p.features);
+    if (validProducts.length > 0) track('ai_generated', { service: 'EC説明文生成AI' });
     if (validProducts.length === 0) { setError("商品名と特徴を入力してください"); return; }
     setLoading(true); setResults([]); setError(""); setProgress({ current: 0, total: validProducts.length });
 
@@ -360,7 +362,7 @@ function ECToolInner() {
       currentCount = newCount;
       localStorage.setItem(STORAGE_KEY, String(currentCount));
       setUsageCount(currentCount);
-      if (err === "LIMIT") { setShowPaywall(true); break; }
+      if (err === "LIMIT") { track('paywall_shown', { service: 'EC説明文生成AI' }); setShowPaywall(true); break; }
       if (ngWordsFound) allNgWords.push(...ngWordsFound.filter(w => !allNgWords.includes(w)));
       newResults.push({ product: validProducts[i], parsed: result!, error: err, rawText: rawTextResult });
     }
