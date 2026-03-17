@@ -56,8 +56,48 @@ function CopyButton({ text, label = "コピー" }: { text: string; label?: strin
   );
 }
 
-function ResultTabs({ parsed, productName }: { parsed: ParsedResult; productName?: string }) {
+// ECサイト風プレビューコンポーネント
+function ECPreview({ parsed, productName, platform }: { parsed: ParsedResult; productName?: string; platform?: string }) {
+  const titleSection = parsed.sections.find(s => s.title === "商品タイトル案");
+  const descSection = parsed.sections.find(s => s.title === "商品説明文");
+  const catchSection = parsed.sections.find(s => s.title === "キャッチコピー");
+
+  const titleText = titleSection?.content.split("\n").find(l => l.trim())?.replace(/^[①②③1-9\.\-\s]+/, "").trim() ?? productName ?? "商品タイトル";
+  const catchText = catchSection?.content.split("\n").find(l => l.trim())?.trim() ?? "";
+  const descText = descSection?.content.trim() ?? "";
+
+  const platformLabel = {
+    rakuten: "楽天市場", amazon: "Amazon", yahoo: "Yahoo!ショッピング",
+    mercari: "メルカリ", base: "BASE"
+  }[platform ?? ""] ?? "ECサイト";
+
+  return (
+    <div className="border-2 border-blue-200 rounded-xl overflow-hidden bg-gray-50">
+      <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 flex items-center gap-2">
+        <span>🛒 {platformLabel} プレビュー</span>
+        <span className="ml-auto text-blue-200">（参考イメージ）</span>
+      </div>
+      <div className="p-4 bg-white">
+        <div className="border border-gray-200 rounded-lg p-4">
+          <h3 className="text-base font-bold text-gray-900 leading-snug mb-1">{titleText}</h3>
+          {catchText && <p className="text-sm text-blue-600 font-semibold mb-2">{catchText}</p>}
+          <div className="w-full h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center mb-3 text-gray-400 text-sm">
+            [商品画像エリア]
+          </div>
+          <p className="text-xs text-gray-600 leading-relaxed line-clamp-4 whitespace-pre-wrap">{descText.slice(0, 200)}{descText.length > 200 ? "..." : ""}</p>
+          <div className="mt-3 flex items-center justify-between">
+            <span className="text-xs text-gray-400">商品説明・SEOキーワード含む</span>
+            <button className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold">カートに入れる</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ResultTabs({ parsed, productName, platform }: { parsed: ParsedResult; productName?: string; platform?: string }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [showPreview, setShowPreview] = useState(false);
   const section = parsed.sections[activeTab];
 
   const handlePrint = () => {
@@ -74,6 +114,15 @@ function ResultTabs({ parsed, productName }: { parsed: ParsedResult; productName
 
   return (
     <div className="space-y-3">
+      {/* 達成感演出バナー */}
+      <div className="animate-bounce bg-green-50 border-2 border-green-400 rounded-xl px-4 py-3 flex items-center gap-3">
+        <span className="text-2xl">✅</span>
+        <div>
+          <p className="text-sm font-bold text-green-800">6セクションの説明文が完成しました！</p>
+          <p className="text-xs text-green-600">タイトル案・キャッチコピー・説明文・SEOキーワード・Q&A・ポジショニング</p>
+        </div>
+      </div>
+
       <div className="flex gap-1 flex-wrap">
         {parsed.sections.map((s, i) => (
           <button key={i} onClick={() => setActiveTab(i)}
@@ -81,7 +130,17 @@ function ResultTabs({ parsed, productName }: { parsed: ParsedResult; productName
             <span>{s.icon}</span><span>{s.title}</span>
           </button>
         ))}
+        <button onClick={() => setShowPreview(!showPreview)}
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${showPreview ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-600 hover:bg-purple-200"}`}>
+          🛒 プレビュー
+        </button>
       </div>
+
+      {/* ECサイト風プレビュー */}
+      {showPreview && (
+        <ECPreview parsed={parsed} productName={productName} platform={platform} />
+      )}
+
       <div className="bg-white border border-gray-200 rounded-xl p-4 min-h-[280px]">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-semibold text-gray-700">{section.icon} {section.title}</span>
@@ -90,7 +149,7 @@ function ResultTabs({ parsed, productName }: { parsed: ParsedResult; productName
         <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{section.content}</pre>
       </div>
       <div className="flex gap-2 justify-end flex-wrap">
-        <CopyButton text={parsed.raw} label="全文コピー" />
+        <CopyButton text={parsed.raw} label="📋 全文コピー" />
         <button onClick={handlePrint} className="text-xs px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium">
           印刷・PDF保存
         </button>
@@ -437,7 +496,7 @@ function ECToolInner() {
                   <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600">{results[activeResult].error}</div>
                 ) : results[activeResult]?.parsed ? (
                   <>
-                    <ResultTabs parsed={results[activeResult].parsed} productName={results[activeResult].product.productName} />
+                    <ResultTabs parsed={results[activeResult].parsed} productName={results[activeResult].product.productName} platform={platform} />
                     <button
                       onClick={handleRegenerate}
                       disabled={loading}
