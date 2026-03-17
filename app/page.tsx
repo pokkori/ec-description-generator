@@ -138,6 +138,49 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* 感情フック：ストーリー型 */}
+      <section className="py-14 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="inline-block bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-6 border border-blue-200">
+            こんな経験、ありませんか？
+          </div>
+          <div className="space-y-4">
+            {[
+              {
+                emoji: "😩",
+                scene: "1商品の説明文に30分かけた日",
+                body: "商品が増えるたびに作業が増える。でも説明文の質が売上を左右することもわかってる。時間が足りない、でも手を抜けない——そのジレンマ、ありませんか？",
+              },
+              {
+                emoji: "😓",
+                scene: "楽天とAmazonで毎回書き直す手間",
+                body: "同じ商品なのに、モールごとにフォーマットが違う。コピペするとペナルティになるかも……という不安もある。この繰り返し作業に疲れていませんか？",
+              },
+              {
+                emoji: "💸",
+                scene: "ライター外注で月¥5万消えた",
+                body: "品質にバラつきがある、修正依頼が面倒、締め切りが守られない。外注コストが積み重なって、利益を圧迫していませんか？",
+              },
+            ].map((item) => (
+              <div key={item.scene} className="flex gap-4 bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                <span className="text-3xl shrink-0">{item.emoji}</span>
+                <div>
+                  <p className="font-bold text-gray-800 text-sm mb-1">{item.scene}</p>
+                  <p className="text-sm text-gray-500 leading-relaxed">{item.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 bg-blue-600 rounded-2xl p-5 text-center">
+            <p className="text-white font-bold mb-1">その悩み、AIが全部解決します。</p>
+            <p className="text-blue-100 text-sm mb-4">商品名を入力するだけで、30秒でモール最適化済みの説明文が完成。</p>
+            <Link href="/tool" className="inline-block bg-white text-blue-600 font-black px-6 py-3 rounded-xl text-sm hover:bg-blue-50 transition-colors">
+              今すぐ無料で説明文を作る →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* 課題 */}
       <section className="bg-gray-50 py-16">
         <div className="max-w-5xl mx-auto px-6">
@@ -296,8 +339,15 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* スティッキーモバイルCTA */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-blue-200 px-4 py-3 z-40 sm:hidden shadow-lg">
+        <Link href="/tool" className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-center py-3.5 rounded-xl text-sm">
+          商品説明文を無料で作る →
+        </Link>
+      </div>
+
       {/* フッター */}
-      <footer className="border-t border-gray-100 py-8 text-center text-xs text-gray-400">
+      <footer className="border-t border-gray-100 py-8 pb-24 sm:pb-8 text-center text-xs text-gray-400">
         <div className="max-w-5xl mx-auto px-6 space-y-3">
           <p className="font-medium text-gray-500">AI商品説明文ジェネレーター</p>
           <div className="flex flex-wrap justify-center gap-4">
