@@ -13,11 +13,16 @@ const STORAGE_KEY = "ec_gen_count";
 type Section = { title: string; icon: string; content: string };
 type ParsedResult = { sections: Section[]; raw: string };
 type ProductInput = { id: number; productName: string; category: string; features: string; price: string };
-type ProductResult = { product: ProductInput; parsed: ParsedResult; error?: string };
+type ProductResult = { product: ProductInput; parsed: ParsedResult; error?: string; rawText?: string };
 
 let nextId = 1;
 function newProduct(): ProductInput {
   return { id: nextId++, productName: "", category: "", features: "", price: "" };
+}
+
+function extractCvrScore(text: string): number | null {
+  const m = text.match(/===CVR_SCORE===(\d+)/);
+  return m ? Math.min(100, parseInt(m[1], 10)) : null;
 }
 
 function parseResult(text: string): ParsedResult {
@@ -28,9 +33,11 @@ function parseResult(text: string): ParsedResult {
     { key: "SEOキーワード", icon: "🔍" },
     { key: "よくある質問", icon: "💬" },
     { key: "ポジショニング", icon: "📊" },
+    { key: "CVR予測スコア", icon: "🎯" },
   ];
+  const cleanText = text.replace(/===CVR_SCORE===\d+\n?/g, "");
   const sections: Section[] = [];
-  const parts = text.split(/^---$/m);
+  const parts = cleanText.split(/^---$/m);
   for (const part of parts) {
     const trimmed = part.trim();
     if (!trimmed) continue;
@@ -40,8 +47,8 @@ function parseResult(text: string): ParsedResult {
       sections.push({ title: matched.key, icon: matched.icon, content });
     }
   }
-  if (sections.length === 0) sections.push({ title: "生成結果", icon: "📄", content: text });
-  return { sections, raw: text };
+  if (sections.length === 0) sections.push({ title: "生成結果", icon: "📄", content: cleanText });
+  return { sections, raw: cleanText };
 }
 
 // startCheckout は PayjpModal で処理するため削除済み
@@ -95,10 +102,36 @@ function ECPreview({ parsed, productName, platform }: { parsed: ParsedResult; pr
   );
 }
 
-function ResultTabs({ parsed, productName, platform }: { parsed: ParsedResult; productName?: string; platform?: string }) {
+function CvrScoreCard({ score }: { score: number }) {
+  const color = score >= 75 ? "text-green-600" : score >= 60 ? "text-amber-600" : "text-red-600";
+  const bg = score >= 75 ? "bg-green-50 border-green-300" : score >= 60 ? "bg-amber-50 border-amber-300" : "bg-red-50 border-red-300";
+  const barColor = score >= 75 ? "bg-green-500" : score >= 60 ? "bg-amber-500" : "bg-red-500";
+  const label = score >= 75 ? "高CVR見込み" : score >= 60 ? "平均的" : "改善の余地あり";
+  return (
+    <div className={`border-2 rounded-xl p-4 mb-4 ${bg}`}>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-bold text-gray-700">🎯 CVR予測スコア（購買転換率）</span>
+        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${score >= 75 ? "bg-green-100 text-green-700" : score >= 60 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{label}</span>
+      </div>
+      <div className="flex items-end gap-3 mb-2">
+        <span className={`text-5xl font-black ${color}`}>{score}</span>
+        <span className="text-lg text-gray-500 mb-1">/100</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+        <div className={`h-2.5 rounded-full transition-all duration-1000 ${barColor}`} style={{ width: `${score}%` }} />
+      </div>
+      <p className="text-xs text-gray-500">
+        {score >= 75 ? "この説明文は購買意欲を強く喚起する内容です。そのまま掲載してください。" : score >= 60 ? "平均的なCVRが期待できます。「CVR予測スコアと改善提案」タブの内容で更に磨くと効果的です。" : "改善余地があります。「CVR予測スコアと改善提案」の指摘を反映して再生成することをお勧めします。"}
+      </p>
+    </div>
+  );
+}
+
+function ResultTabs({ parsed, productName, platform, rawText }: { parsed: ParsedResult; productName?: string; platform?: string; rawText?: string }) {
   const [activeTab, setActiveTab] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const section = parsed.sections[activeTab];
+  const cvrScore = rawText ? extractCvrScore(rawText) : null;
 
   const handlePrint = () => {
     const html = `<html><head><title>EC商品説明文</title><style>body{font-family:sans-serif;padding:32px;line-height:1.8;white-space:pre-wrap;}</style></head><body>${parsed.raw.replace(/</g, "&lt;")}</body></html>`;
@@ -118,10 +151,11 @@ function ResultTabs({ parsed, productName, platform }: { parsed: ParsedResult; p
       <div className="animate-bounce bg-green-50 border-2 border-green-400 rounded-xl px-4 py-3 flex items-center gap-3">
         <span className="text-2xl">✅</span>
         <div>
-          <p className="text-sm font-bold text-green-800">6セクションの説明文が完成しました！</p>
+          <p className="text-sm font-bold text-green-800">説明文が完成しました！</p>
           <p className="text-xs text-green-600">タイトル案・キャッチコピー・説明文・SEOキーワード・Q&A・ポジショニング</p>
         </div>
       </div>
+      {cvrScore !== null && <CvrScoreCard score={cvrScore} />}
 
       <div className="flex gap-1 flex-wrap">
         {parsed.sections.map((s, i) => (
@@ -278,7 +312,7 @@ function ECToolInner() {
   };
   const removeProduct = (id: number) => setProducts(ps => ps.filter(p => p.id !== id));
 
-  const generateOne = async (product: ProductInput, count: number): Promise<{ result?: ParsedResult; error?: string; newCount: number; ngWordsFound?: string[] }> => {
+  const generateOne = async (product: ProductInput, count: number): Promise<{ result?: ParsedResult; error?: string; newCount: number; ngWordsFound?: string[]; rawText?: string }> => {
     const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...product, platform }) });
     if (res.status === 429) return { error: "LIMIT", newCount: count };
     if (!res.ok) {
@@ -306,7 +340,7 @@ function ECToolInner() {
         accumulated += chunk;
       }
     }
-    return { result: parseResult(accumulated), newCount, ngWordsFound };
+    return { result: parseResult(accumulated), newCount, ngWordsFound, rawText: accumulated };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -322,13 +356,13 @@ function ECToolInner() {
 
     for (let i = 0; i < validProducts.length; i++) {
       setProgress({ current: i + 1, total: validProducts.length });
-      const { result, error: err, newCount, ngWordsFound } = await generateOne(validProducts[i], currentCount);
+      const { result, error: err, newCount, ngWordsFound, rawText: rawTextResult } = await generateOne(validProducts[i], currentCount);
       currentCount = newCount;
       localStorage.setItem(STORAGE_KEY, String(currentCount));
       setUsageCount(currentCount);
       if (err === "LIMIT") { setShowPaywall(true); break; }
       if (ngWordsFound) allNgWords.push(...ngWordsFound.filter(w => !allNgWords.includes(w)));
-      newResults.push({ product: validProducts[i], parsed: result!, error: err });
+      newResults.push({ product: validProducts[i], parsed: result!, error: err, rawText: rawTextResult });
     }
     setNgWords(allNgWords);
 
@@ -496,7 +530,7 @@ function ECToolInner() {
                   <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600">{results[activeResult].error}</div>
                 ) : results[activeResult]?.parsed ? (
                   <>
-                    <ResultTabs parsed={results[activeResult].parsed} productName={results[activeResult].product.productName} platform={platform} />
+                    <ResultTabs parsed={results[activeResult].parsed} productName={results[activeResult].product.productName} platform={platform} rawText={results[activeResult].rawText} />
                     <button
                       onClick={handleRegenerate}
                       disabled={loading}
