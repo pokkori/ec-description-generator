@@ -160,7 +160,7 @@ A4:
   try {
     const newCount = cookieCount + 1;
     const stream = getClient().messages.stream({
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-sonnet-4-6",
       max_tokens: 3200,
       messages: [{ role: "user", content: prompt }],
     });
