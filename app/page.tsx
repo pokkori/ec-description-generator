@@ -339,6 +339,27 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* もっと活用する3選 */}
+      <section className="py-8 px-4 max-w-lg mx-auto">
+        <h2 className="text-center text-base font-bold text-indigo-700 mb-4">📦 EC説明文AIをもっと活用する3選</h2>
+        <ol className="space-y-3">
+          {[
+            { icon: "🛍️", title: "複数プラットフォームに展開", desc: "Amazon・楽天・メルカリ向けに同じ商品で異なる説明文を生成して、各プラットフォームに最適化しよう。" },
+            { icon: "✏️", title: "AIの文章をカスタマイズ", desc: "生成した説明文をベースに自分の言葉を加えてオリジナリティを出すと購買率がUP！" },
+            { icon: "📈", title: "ビジネス出品者向けにAPI連携", desc: "在庫管理システムとAPI連携して大量商品の説明文を自動生成。月¥2,980で無制限利用可能。" },
+          ].map((item, i) => (
+            <li key={i} className="flex items-start gap-3 rounded-xl p-3"
+              style={{ background: "rgba(79,70,229,0.05)", border: "1px solid rgba(79,70,229,0.12)" }}>
+              <span style={{ fontSize: "22px", lineHeight: "1" }}>{item.icon}</span>
+              <div>
+                <div className="text-indigo-800 font-bold text-sm">{i + 1}. {item.title}</div>
+                <div className="text-indigo-600 text-xs mt-0.5 opacity-80">{item.desc}</div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       {/* X Share */}
       <section className="py-8 px-6 max-w-3xl mx-auto text-center">
         <a
