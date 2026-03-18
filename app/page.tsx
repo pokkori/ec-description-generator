@@ -360,6 +360,24 @@ export default function LandingPage() {
         </ol>
       </section>
 
+      {/* FAQ */}
+      <section className="py-16 px-6 max-w-3xl mx-auto">
+        <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">よくある質問</h2>
+        <div className="space-y-4">
+          {[
+            { q: "生成した説明文は商用利用できますか？", a: "はい、生成された文章はご自由にご利用いただけます。" },
+            { q: "どのECサイトに対応していますか？", a: "Amazon・楽天・Yahoo!ショッピング・BASE等、主要ECサイトに対応。" },
+            { q: "何文字まで生成できますか？", a: "最大800文字の商品説明文を生成します。SEOに最適化された構成です。" },
+            { q: "無料で使えますか？", a: "毎日3回まで無料でご利用いただけます。" },
+          ].map((faq) => (
+            <div key={faq.q} className="border border-gray-200 rounded-xl p-5">
+              <h3 className="font-bold text-gray-900 mb-2 text-sm">Q. {faq.q}</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">A. {faq.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* X Share */}
       <section className="py-8 px-6 max-w-3xl mx-auto text-center">
         <a
