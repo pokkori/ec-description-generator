@@ -339,6 +339,21 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* X Share */}
+      <section className="py-8 px-6 max-w-3xl mx-auto text-center">
+        <a
+          href={"https://twitter.com/intent/tweet?text=" + encodeURIComponent("EC説明文生成AI — 商品名・特徴を入力するだけでAIがEC向け販売説明文を自動生成📦 ネットショップ出品者に超便利！ → https://ec-description-generator.vercel.app #EC説明文 #ネットショップ #AI")}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-xl text-sm transition-colors"
+        >
+          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          Xでシェアする
+        </a>
+      </section>
+
       {/* スティッキーモバイルCTA */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-blue-200 px-4 py-3 z-40 sm:hidden shadow-lg">
         <Link href="/tool" className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-center py-3.5 rounded-xl text-sm">
