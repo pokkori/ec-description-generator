@@ -212,6 +212,23 @@ function ResultTabs({ parsed, productName, platform, rawText }: { parsed: Parsed
           ))}
         </ol>
       </div>
+      {/* 生成した説明文を使ってみよう - BASE A8.netアフィリエイト */}
+      <div className="mt-4 bg-orange-50 border border-orange-200 rounded-xl p-4">
+        <p className="text-sm font-bold text-orange-800 mb-3">🏪 生成した説明文を使ってみよう</p>
+        <a
+          href="https://px.a8.net/svt/ejp?a8mat=4AZIOF+8ZAE9E+2QQG+62MDD"
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          className="flex items-center justify-between bg-white border border-orange-300 rounded-xl px-4 py-3 hover:bg-orange-50 transition-colors"
+        >
+          <div>
+            <div className="text-sm font-bold text-slate-800">BASE — 無料でネットショップ開業</div>
+            <div className="text-xs text-slate-500 mt-0.5">初期費用・月額無料 • 今すぐショップ開設できる</div>
+          </div>
+          <span className="text-orange-600 font-bold text-xs bg-orange-100 px-2 py-1 rounded-full shrink-0 ml-2">無料で開業 →</span>
+        </a>
+        <p className="text-xs text-slate-400 text-center mt-2">※ 広告・PR（BASE公式サイトに遷移します）</p>
+      </div>
       </div>
     </div>
   );
