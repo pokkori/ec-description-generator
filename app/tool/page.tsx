@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import PayjpModal from "@/components/PayjpModal";
+import KomojuButton from "@/components/KomojuButton";
 import { track } from '@vercel/analytics';
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
@@ -424,13 +424,15 @@ function ECToolInner() {
     <main className="min-h-screen bg-gray-50">
       {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} onStartPayjp={(plan) => { setPayjpPlan(plan); setShowPaywall(false); setShowPayjp(true); }} />}
       {showPayjp && (
-        <PayjpModal
-          publicKey={PAYJP_PUBLIC_KEY}
-          planLabel={payjpPlan === "enterprise" ? "エンタープライズプラン ¥9,800/月" : payjpPlan === "business" ? "ビジネスプラン ¥4,980/月" : "スタンダードプラン ¥980/月"}
-          plan={payjpPlan}
-          onSuccess={() => { setShowPayjp(false); setUsageCount(0); localStorage.removeItem(STORAGE_KEY); }}
-          onClose={() => setShowPayjp(false)}
-        />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl relative">
+            <button onClick={() => setShowPayjp(false)} className="absolute top-3 right-3 text-gray-400 text-xl">✕</button>
+            <div className="text-3xl mb-3 text-center">🛒</div>
+            <h2 className="text-lg font-bold mb-2 text-center">プレミアムプラン</h2>
+            <p className="text-sm text-gray-500 mb-4 text-center">{payjpPlan === "enterprise" ? "エンタープライズ — 無制限+API連携" : payjpPlan === "business" ? "ビジネス — 無制限+複数ショップ" : "スタンダード — 無制限利用"}</p>
+            <KomojuButton planId="standard" planLabel={payjpPlan === "enterprise" ? "エンタープライズプラン ¥9,800/月" : payjpPlan === "business" ? "ビジネスプラン ¥4,980/月" : "スタンダードプラン ¥980/月"} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50" />
+          </div>
+        </div>
       )}
 
       <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
