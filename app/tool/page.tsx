@@ -196,6 +196,22 @@ function ResultTabs({ parsed, productName, platform, rawText }: { parsed: Parsed
         >
           𝕏 AIが作った説明文をシェア
         </a>
+      {/* 次のアクション3選 */}
+      <div className="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p className="text-sm font-bold text-blue-800 mb-3">📋 次にやるべきこと3選</p>
+        <ol className="space-y-2">
+          {[
+            { icon: "📋", text: "この説明文をコピーして商品ページに貼り付ける" },
+            { icon: "🔄", text: "別の角度（価格訴求・感情訴求）で再生成してA/Bテストする" },
+            { icon: "📊", text: "説明文を変えた後の商品ページのCVR変化を計測する" },
+          ].map((item, i) => (
+            <li key={i} className="flex items-start gap-3 text-sm text-gray-700">
+              <span className="text-lg leading-none">{item.icon}</span>
+              <span>{i + 1}. {item.text}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
       </div>
     </div>
   );
