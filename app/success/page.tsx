@@ -1,9 +1,21 @@
 "use client";
 
-import { Suspense } from "react";
+import { useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 function SuccessContent() {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Komoju session verify
+    const sessionId = searchParams.get("session_id");
+    if (sessionId) {
+      fetch(`/api/komoju/verify?session_id=${sessionId}`).catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="text-center">
       <div className="text-5xl mb-4">🎉</div>
