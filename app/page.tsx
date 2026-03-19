@@ -217,6 +217,39 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* 景表法・薬機法チェック差別化セクション */}
+      <section className="py-14 px-4 bg-amber-50 border-y border-amber-200">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full mb-3 border border-amber-300">⚖️ 法的リスクをAIが自動回避</div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">景表法・薬機法 違反ワードを<br />AIが自動チェック</h2>
+            <p className="text-sm text-gray-600 max-w-xl mx-auto">「最高」「No.1」「治る」——知らずに使うと行政指導・排除命令の対象に。楽天・Amazonの規約違反にもなります。このAIは生成と同時にNGワードを自動検出します。</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            {[
+              { law: "景品表示法", examples: ["No.1", "最高品質", "業界初", "日本一"], risk: "措置命令・課徴金（売上の3%）" },
+              { law: "薬機法", examples: ["治る", "効く", "改善する", "医師も推薦"], risk: "2年以下の懲役または200万円以下の罰金" },
+              { law: "各モール規約", examples: ["最安値保証", "他社比較", "無条件返金", "永久保証"], risk: "出品停止・アカウント凍結" },
+            ].map((item) => (
+              <div key={item.law} className="bg-white rounded-xl p-4 border border-amber-200 shadow-sm">
+                <h3 className="font-bold text-amber-800 text-sm mb-2">❌ {item.law}</h3>
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {item.examples.map(ex => (
+                    <span key={ex} className="bg-red-50 text-red-600 text-xs px-2 py-0.5 rounded border border-red-200 line-through">{ex}</span>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500">{item.risk}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-5 text-center">
+            <p className="text-green-800 font-bold mb-1">✅ このAIは生成と同時に自動検出・修正提案</p>
+            <p className="text-sm text-green-700 mb-3">楽天RMS・Amazon AIにはない「法務リスク回避機能」が標準搭載。EC担当者・代理店に安心して使えます。</p>
+            <a href="/tool" className="inline-block bg-green-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm hover:bg-green-700 transition-colors">法的に安全な説明文を無料で生成する →</a>
+          </div>
+        </div>
+      </section>
+
       {/* Before/After */}
       <section className="py-16 px-4 bg-blue-50">
         <div className="max-w-3xl mx-auto">
