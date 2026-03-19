@@ -103,6 +103,62 @@ function ECPreview({ parsed, productName, platform }: { parsed: ParsedResult; pr
   );
 }
 
+// 文章品質スコア計算ロジック（フロントエンドのみ）
+type QualityCheckItem = { label: string; ok: boolean; point: number };
+function calcQualityScore(text: string): { total: number; items: QualityCheckItem[] } {
+  const charLen = text.length;
+  const hasKeyword = /特徴|品質|安心|おすすめ|人気|定番|こだわり|丁寧|高品質|厳選/.test(text);
+  const hasNumber = /\d+/.test(text);
+  const hasEmoji = /[\u{1F300}-\u{1FFFF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(text);
+  const lineBreaks = (text.match(/\n/g) || []).length;
+  const hasTrust = /送料|返品|保証|安全|公式|正規|認証|実績|満足|レビュー/.test(text);
+
+  const charOk = charLen >= 200 && charLen <= 400;
+  const items: QualityCheckItem[] = [
+    { label: `文字数200〜400字（現在${charLen}字）`, ok: charOk, point: 25 },
+    { label: "品質・安心系キーワードを含む", ok: hasKeyword, point: 20 },
+    { label: "数字（サイズ・重量・個数等）を含む", ok: hasNumber, point: 15 },
+    { label: "絵文字を含む", ok: hasEmoji, point: 10 },
+    { label: "改行が3回以上（読みやすさ）", ok: lineBreaks >= 3, point: 15 },
+    { label: "送料・返品・保証等の信頼ワードを含む", ok: hasTrust, point: 15 },
+  ];
+  const total = items.reduce((acc, item) => acc + (item.ok ? item.point : 0), 0);
+  return { total, items };
+}
+
+function QualityScoreCard({ text }: { text: string }) {
+  const { total, items } = calcQualityScore(text);
+  const color = total >= 80 ? "text-green-600" : total >= 60 ? "text-amber-600" : "text-red-600";
+  const bg = total >= 80 ? "bg-green-50 border-green-300" : total >= 60 ? "bg-amber-50 border-amber-300" : "bg-red-50 border-red-300";
+  const barColor = total >= 80 ? "bg-green-500" : total >= 60 ? "bg-amber-500" : "bg-red-500";
+  const badge = total >= 80 ? "優秀！" : total >= 60 ? "良好" : "改善余地あり";
+  const badgeColor = total >= 80 ? "bg-green-100 text-green-700" : total >= 60 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700";
+  return (
+    <div className={`border-2 rounded-xl p-4 mb-4 ${bg}`}>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-bold text-gray-700">📊 説明文品質スコア</span>
+        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>{badge}</span>
+      </div>
+      <div className="flex items-end gap-3 mb-2">
+        <span className={`text-5xl font-black ${color}`}>{total}</span>
+        <span className="text-lg text-gray-500 mb-1">/100</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-3">
+        <div className={`h-2.5 rounded-full transition-all duration-1000 ${barColor}`} style={{ width: `${total}%` }} />
+      </div>
+      <ul className="space-y-1.5">
+        {items.map((item, i) => (
+          <li key={i} className="flex items-center gap-2 text-xs text-gray-700">
+            <span className={item.ok ? "text-green-500" : "text-red-400"}>{item.ok ? "✅" : "❌"}</span>
+            <span className={item.ok ? "" : "text-gray-400"}>{item.label}</span>
+            <span className={`ml-auto font-semibold ${item.ok ? "text-green-600" : "text-gray-300"}`}>+{item.point}pt</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function CvrScoreCard({ score }: { score: number }) {
   const color = score >= 75 ? "text-green-600" : score >= 60 ? "text-amber-600" : "text-red-600";
   const bg = score >= 75 ? "bg-green-50 border-green-300" : score >= 60 ? "bg-amber-50 border-amber-300" : "bg-red-50 border-red-300";
@@ -133,6 +189,8 @@ function ResultTabs({ parsed, productName, platform, rawText }: { parsed: Parsed
   const [showPreview, setShowPreview] = useState(false);
   const section = parsed.sections[activeTab];
   const cvrScore = rawText ? extractCvrScore(rawText) : null;
+  const descSection = parsed.sections.find(s => s.title === "商品説明文");
+  const qualityText = descSection?.content ?? parsed.raw;
 
   const handlePrint = () => {
     const html = `<html><head><title>EC商品説明文</title><style>body{font-family:sans-serif;padding:32px;line-height:1.8;white-space:pre-wrap;}</style></head><body>${parsed.raw.replace(/</g, "&lt;")}</body></html>`;
@@ -157,6 +215,7 @@ function ResultTabs({ parsed, productName, platform, rawText }: { parsed: Parsed
         </div>
       </div>
       {cvrScore !== null && <CvrScoreCard score={cvrScore} />}
+      <QualityScoreCard text={qualityText} />
 
       <div className="flex gap-1 flex-wrap">
         {parsed.sections.map((s, i) => (
