@@ -384,6 +384,35 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* A/Bテスト機能訴求 */}
+      <section className="py-14 px-4 bg-indigo-50">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="inline-block bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full mb-3">新機能：A/Bテスト比較</div>
+            <h2 className="text-2xl font-black text-gray-900">「どちらの説明文が売れるか」をAIが比較判定</h2>
+            <p className="text-sm text-gray-500 mt-2">価格訴求型・感情訴求型・SEO重視型の3パターンを生成して品質スコアで比較。最適な説明文を選べます。</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            {[
+              { icon: "💡", label: "価格訴求型", desc: "「1商品あたり30秒・外注費¥3,000削減」を前面に。コスパ重視のバイヤーに刺さる。", color: "border-blue-200 bg-blue-50" },
+              { icon: "❤️", label: "感情訴求型", desc: "「この商品で毎日が変わる」体験を描写。感情で動く衝動買いを促す。", color: "border-rose-200 bg-rose-50" },
+              { icon: "🔍", label: "SEO重視型", desc: "検索上位15キーワードを自然に埋め込み。長期的な検索流入を最大化。", color: "border-green-200 bg-green-50" },
+            ].map((item) => (
+              <div key={item.label} className={`rounded-2xl border-2 ${item.color} p-5`}>
+                <div className="text-2xl mb-2">{item.icon}</div>
+                <h3 className="font-bold text-gray-900 mb-1 text-sm">{item.label}</h3>
+                <p className="text-xs text-gray-600 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <a href="/tool" className="inline-block bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-indigo-700 shadow-md text-sm">
+              A/Bテスト比較を試す（無料）→
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* もっと活用する3選 */}
       <section className="py-8 px-4 max-w-lg mx-auto">
         <h2 className="text-center text-base font-bold text-indigo-700 mb-4">📦 EC説明文AIをもっと活用する3選</h2>

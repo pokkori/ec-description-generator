@@ -186,6 +186,41 @@ function CvrScoreCard({ score }: { score: number }) {
   );
 }
 
+// A/Bテスト比較カード
+function ABTestCompare({ textA, textB, labelA, labelB }: { textA: string; textB: string; labelA: string; labelB: string }) {
+  const [winner, setWinner] = useState<"A" | "B" | null>(null);
+  const qA = calcQualityScore(textA);
+  const qB = calcQualityScore(textB);
+  return (
+    <div className="mt-4 bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+      <p className="text-sm font-bold text-indigo-800 mb-3">🔬 A/Bテスト比較</p>
+      <div className="grid grid-cols-2 gap-3">
+        {[
+          { label: labelA, text: textA, score: qA.total, key: "A" as const },
+          { label: labelB, text: textB, score: qB.total, key: "B" as const },
+        ].map(({ label, score, key }) => (
+          <div key={key}
+            onClick={() => setWinner(key)}
+            className={`cursor-pointer rounded-xl border-2 p-3 transition-all ${winner === key ? "border-indigo-500 bg-indigo-100" : "border-gray-200 bg-white hover:border-indigo-300"}`}>
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-bold text-xs text-indigo-700">{label}</span>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${score >= 80 ? "bg-green-100 text-green-700" : score >= 60 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-600"}`}>
+                品質 {score}pt
+              </span>
+            </div>
+            {winner === key && <span className="text-xs font-bold text-indigo-600">✓ このパターンを採用</span>}
+          </div>
+        ))}
+      </div>
+      {winner && (
+        <p className="text-xs text-center text-indigo-600 mt-2 font-bold">
+          {winner === "A" ? labelA : labelB} が選ばれました！上のタブから文章をコピーしてください。
+        </p>
+      )}
+    </div>
+  );
+}
+
 function ResultTabs({ parsed, productName, platform, rawText }: { parsed: ParsedResult; productName?: string; platform?: string; rawText?: string }) {
   const [activeTab, setActiveTab] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
