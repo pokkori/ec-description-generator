@@ -278,6 +278,25 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
           <button onClick={() => onRemove(product.id)} className="text-xs text-red-400 hover:text-red-600">削除</button>
         )}
       </div>
+      {/* カテゴリプリセット */}
+      <div className="flex flex-wrap gap-1.5">
+        {[
+          { emoji: "👕", label: "アパレル", cat: "ファッション・衣類", feat: "- 素材：コットン100%\n- サイズ展開：S〜XL\n- 洗濯機OK\n- 速乾・吸湿性高い" },
+          { emoji: "💄", label: "美容", cat: "コスメ・スキンケア", feat: "- 肌に優しい低刺激処方\n- 無香料・無添加\n- 全肌タイプ対応\n- 美容成分○○配合" },
+          { emoji: "🍳", label: "キッチン", cat: "キッチン用品・調理器具", feat: "- 食洗機対応\n- IH対応\n- ステンレス素材\n- 高さ調節機能付き" },
+          { emoji: "📱", label: "デジタル", cat: "スマートフォン・電子機器", feat: "- バッテリー持続XX時間\n- 防水・防塵対応\n- USB-C充電\n- 軽量コンパクト設計" },
+          { emoji: "🧸", label: "ギフト", cat: "ギフト・プレゼント向け", feat: "- ラッピング対応\n- メッセージカード付き\n- 贈り物箱入り\n- 高見え・特別感ある仕上げ" },
+        ].map((p) => (
+          <button
+            key={p.label}
+            type="button"
+            onClick={() => { onChange(product.id, "category", p.cat); onChange(product.id, "features", p.feat); }}
+            className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full transition font-medium"
+          >
+            {p.emoji} {p.label}
+          </button>
+        ))}
+      </div>
       <div>
         <label className="block text-xs font-medium text-gray-600 mb-1">商品名 <span className="text-red-500">*</span></label>
         <input type="text" value={product.productName} onChange={e => onChange(product.id, "productName", e.target.value)} required
