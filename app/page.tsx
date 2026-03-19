@@ -438,6 +438,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto px-6 space-y-3">
           <p className="font-medium text-gray-500">AI商品説明文ジェネレーター</p>
           <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/blog" className="hover:text-gray-600 font-medium">ECコラム</Link>
             <Link href="/blog/rakuten-description" className="hover:text-gray-600">楽天商品説明文の書き方</Link>
             <Link href="/blog/amazon-description" className="hover:text-gray-600">Amazon商品説明文のコツ</Link>
             <Link href="/blog/ec-description-template" className="hover:text-gray-600">商品説明文テンプレート</Link>
