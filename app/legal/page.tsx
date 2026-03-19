@@ -1,9 +1,10 @@
 import Link from "next/link";
 
 const ITEMS = [
-  { label: "販売業者", value: "ポッコリラボ" },
+  { label: "販売業者", value: "新美諭" },
+  { label: "電話番号", value: "090-6093-5290" },
   { label: "運営責任者", value: "ポッコリラボ 代表 新美" },
-  { label: "お問い合わせ", value: "X(Twitter) @levona_design へのDM" },
+  { label: "お問い合わせ", value: "levonadesign@gmail.com（X: @levona_design）" },
   { label: "販売価格", value: "スタンダードプラン ¥980/月、ビジネスプラン ¥4,980/月、エンタープライズプラン ¥9,800/月（税込）" },
   { label: "所在地", value: "非公開（請求があれば遅滞なく開示します）" },
   { label: "支払方法", value: "クレジットカード（オンライン決済サービス経由）（Visa・Mastercard・American Express・JCB）" },
