@@ -7,6 +7,8 @@ import { track } from '@vercel/analytics';
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
 type Platform = "rakuten" | "amazon" | "yahoo" | "mercari" | "base";
+type Tone = "professional" | "friendly" | "luxury";
+type KeywordStrength = "seo" | "balanced" | "natural";
 
 const FREE_LIMIT = 3;
 const STORAGE_KEY = "ec_gen_count";
@@ -388,6 +390,8 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
 
 function ECToolInner() {
   const [platform, setPlatform] = useState<Platform>("rakuten");
+  const [tone, setTone] = useState<Tone>("professional");
+  const [keywordStrength, setKeywordStrength] = useState<KeywordStrength>("balanced");
   const [mode, setMode] = useState<"single" | "bulk">("single");
   const [products, setProducts] = useState<ProductInput[]>([newProduct()]);
   const [results, setResults] = useState<ProductResult[]>([]);
@@ -425,7 +429,7 @@ function ECToolInner() {
   const removeProduct = (id: number) => setProducts(ps => ps.filter(p => p.id !== id));
 
   const generateOne = async (product: ProductInput, count: number): Promise<{ result?: ParsedResult; error?: string; newCount: number; ngWordsFound?: string[]; rawText?: string }> => {
-    const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...product, platform }) });
+    const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...product, platform, tone, keywordStrength }) });
     if (res.status === 429) return { error: "LIMIT", newCount: count };
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -560,6 +564,46 @@ function ECToolInner() {
                       <span className="mr-1">{p.icon}</span>{p.label}
                       {platform === p.value && (
                         <span className="block text-xs font-normal text-blue-100 mt-0.5">{p.hint}</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 文体トーン選択 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">文体トーン</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { value: "professional" as Tone, label: "プロ向け", icon: "💼", hint: "信頼感・実績・スペック重視" },
+                    { value: "friendly" as Tone, label: "親しみやすい", icon: "😊", hint: "口コミ風・共感・日常生活" },
+                    { value: "luxury" as Tone, label: "高級感", icon: "✨", hint: "ブランド・こだわり・特別感" },
+                  ]).map(t => (
+                    <button key={t.value} type="button" onClick={() => setTone(t.value)}
+                      className={`py-2 px-2 rounded-lg border text-xs font-medium transition-colors text-left ${tone === t.value ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-700 border-gray-300 hover:border-indigo-400"}`}>
+                      <span className="mr-1">{t.icon}</span>{t.label}
+                      {tone === t.value && (
+                        <span className="block text-xs font-normal text-indigo-100 mt-0.5">{t.hint}</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* SEOキーワード強度 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">SEOキーワード強度</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { value: "seo" as KeywordStrength, label: "SEO重視", icon: "🔍", hint: "キーワード密度高め・検索上位狙い" },
+                    { value: "balanced" as KeywordStrength, label: "バランス型", icon: "⚖️", hint: "自然な文中にSEOキーワード挿入" },
+                    { value: "natural" as KeywordStrength, label: "読みやすさ重視", icon: "📖", hint: "人間が読んで自然な流暢な文章" },
+                  ]).map(k => (
+                    <button key={k.value} type="button" onClick={() => setKeywordStrength(k.value)}
+                      className={`py-2 px-2 rounded-lg border text-xs font-medium transition-colors text-left ${keywordStrength === k.value ? "bg-green-600 text-white border-green-600" : "bg-white text-gray-700 border-gray-300 hover:border-green-400"}`}>
+                      <span className="mr-1">{k.icon}</span>{k.label}
+                      {keywordStrength === k.value && (
+                        <span className="block text-xs font-normal text-green-100 mt-0.5">{k.hint}</span>
                       )}
                     </button>
                   ))}

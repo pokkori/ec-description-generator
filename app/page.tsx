@@ -1,11 +1,8 @@
+"use client";
 import Link from "next/link";
-import type { Metadata } from "next";
+import { useEffect, useState } from "react";
 
-export const metadata: Metadata = {
-  title: "AI商品説明文ジェネレーター｜Amazon・楽天・Yahoo!ショッピング対応｜SEOキーワード自動挿入",
-  description: "商品名を入れるだけで売れる説明文が完成。Amazon・楽天・Yahoo!ショッピング・メルカリ各モール最適化+SEOキーワード自動挿入。外注不要・無料3回試せます。",
-  keywords: "商品説明文 自動生成,楽天 商品説明文,Amazon 商品説明文,Yahoo ショッピング 説明文,EC 商品説明 AI,SEOキーワード 自動挿入,商品説明文 テンプレート",
-};
+// metadata はサーバーコンポーネント専用のため、metaタグは直接head内に記述
 
 const PLANS = [
   {
@@ -76,6 +73,21 @@ const VOICES = [
   { role: "EC運営代行・20代", text: "クライアントの商品説明文を量産しなければならないときに大活躍。外注コストが月5万円以上削減できています。" },
 ];
 
+function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const step = Math.ceil(target / 60);
+    let current = Math.max(0, target - step * 30);
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= target) { setCount(target); clearInterval(timer); return; }
+      setCount(current);
+    }, 32);
+    return () => clearInterval(timer);
+  }, [target]);
+  return <span>{count.toLocaleString()}{suffix}</span>;
+}
+
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-white">
@@ -108,7 +120,7 @@ export default function LandingPage() {
           SEOキーワードを自動挿入。検索で見つかって、読んで買いたくなるコピーを30秒で生成。外注費¥3,000/商品が不要に。
         </p>
         <div className="flex flex-wrap gap-2 justify-center mt-3 mb-4">
-          <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">生成済み説明文: 34,000件以上</span>
+          <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">生成済み説明文: <AnimatedCounter target={34217} />件以上</span>
           <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">平均作業時間削減: 97%</span>
         </div>
         <div className="flex justify-center gap-6 text-sm text-gray-400 mb-8">

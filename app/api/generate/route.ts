@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); }
   catch { return NextResponse.json({ error: "リクエストの形式が正しくありません" }, { status: 400 }); }
 
-  const { productName, category, features, price, platform } = body as Record<string, string>;
+  const { productName, category, features, price, platform, tone, keywordStrength } = body as Record<string, string>;
   if (!productName || !features) {
     return NextResponse.json({ error: "商品名と特徴は必須です" }, { status: 400 });
   }
@@ -79,12 +79,28 @@ export async function POST(req: NextRequest) {
       ? "BASE/Shopify向け：ブランドのストーリー・世界観を大切にした文体。感性に訴えかけるリッチな表現。購入者との共感を重視。ハッシュタグ提案も含める。"
       : "Amazon.co.jp向け：Amazonのアルゴリズムに最適化。箇条書き5点で主な特徴を端的に。後半に詳細説明。A+コンテンツ向け構成。";
 
+  const TONE_GUIDE: Record<string, string> = {
+    professional: "文体: プロフェッショナル・ビジネストーン。信頼感・実績・スペックを重視した説得力ある表現を使う。専門用語を適切に活用し、品質と信頼性を前面に出す。",
+    friendly: "文体: 親しみやすく共感を呼ぶトーン。口コミ・レビュー風の自然な語り口。日常生活での使用シーンを想像しやすい表現。読者に「わかる！」と思わせる共感ワードを使う。",
+    luxury: "文体: 高級感・ブランド感あるプレミアムトーン。こだわり・職人技・特別感を表現。感性に訴えかけるリッチな言葉遣い。「選ばれし人のための」「上質な」「至高の」等の表現を自然に使う。",
+  };
+  const KEYWORD_STRENGTH_GUIDE: Record<string, string> = {
+    seo: "SEOキーワード方針: キーワード密度を高めに設定。商品名・カテゴリ・用途ワードを説明文の冒頭・中盤・末尾に自然に配置。検索エンジン最適化を最優先。",
+    balanced: "SEOキーワード方針: 検索キーワードを自然な文中に適度に散りばめる。読みやすさとSEO効果のバランスを最適化。",
+    natural: "SEOキーワード方針: 人間が読んで自然に感じる流暢な文章を最優先。SEOキーワードは最小限に留め、読者体験を重視する。",
+  };
+
+  const toneGuide = TONE_GUIDE[tone] || TONE_GUIDE.professional;
+  const keywordGuide = KEYWORD_STRENGTH_GUIDE[keywordStrength] || KEYWORD_STRENGTH_GUIDE.balanced;
+
   const prompt = `あなたはECマーケティングと商品ページ最適化の専門コンサルタントです。Amazon・楽天市場・Yahoo!ショッピングでの売上改善実績を多数持ち、消費者行動心理・SEO・コピーライティングを統合した商品説明文の制作を得意としています。
 以下の商品情報をもとに、購買率を最大化する即戦力の商品説明文セットを生成してください。
 すべての文章は自然な日本語で、購入者の「買わない理由」を潰しながら「欲しい」という感情を引き出す表現を使ってください。
 
 【プラットフォーム】${platform === "rakuten" ? "楽天市場" : platform === "yahoo" ? "Yahoo!ショッピング" : platform === "mercari" ? "メルカリ" : "Amazon.co.jp"}
 【プラットフォーム別方針】${platformGuide}
+【文体トーン方針】${toneGuide}
+【SEOキーワード方針】${keywordGuide}
 
 【商品情報】
 商品名: ${productName}
