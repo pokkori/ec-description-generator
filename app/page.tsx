@@ -1,6 +1,140 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+
+// LP内インタラクティブデモ（AIなし・固定テンプレート変換）
+const DEMO_TEMPLATES: Record<string, { before: string; after: string; platform: string; cvr: number }> = {
+  "木製まな板": {
+    before: "木製まな板です。サイズは30cm×20cmです。",
+    after: "【天然アカシア材・職人手仕上げ】キッチンに映える木製カッティングボード。抗菌作用のある天然オイル仕上げで衛生的。包丁にやさしい厚さで食材が安定、プロ料理家にも選ばれる逸品。毎日の料理をワンランク上へ。",
+    platform: "Amazon",
+    cvr: 82,
+  },
+  "シルクスカーフ": {
+    before: "シルクスカーフです。いろんな色があります。",
+    after: "【100%天然シルク・発色6色展開】肌触りなめらか、光沢感が上品な本絹スカーフ。オフィス・お出かけ・プレゼントに。UVカット効果もあり、デイリー使いにも最適。ギフトボックス付きで贈り物にも◎",
+    platform: "楽天",
+    cvr: 79,
+  },
+  "ステンレスボトル": {
+    before: "ステンレスのボトルです。保温できます。",
+    after: "【真空2層構造・保温12時間】朝入れたコーヒーが夕方まで熱いまま。BPAフリー・食洗機対応で安心。容量500ml・軽量280gで通勤・アウトドアに最適。口径広めで氷もそのまま入る実用設計。",
+    platform: "Yahoo!",
+    cvr: 85,
+  },
+};
+
+function InteractiveDemo() {
+  const [productName, setProductName] = useState("木製まな板");
+  const [customInput, setCustomInput] = useState("");
+  const [activeDemo, setActiveDemo] = useState<typeof DEMO_TEMPLATES[string] | null>(DEMO_TEMPLATES["木製まな板"]);
+  const [showAfter, setShowAfter] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const selectTemplate = useCallback((name: string) => {
+    setProductName(name);
+    setCustomInput("");
+    setActiveDemo(DEMO_TEMPLATES[name] || null);
+    setShowAfter(false);
+  }, []);
+
+  const handleGenerate = useCallback(() => {
+    setIsAnimating(true);
+    setShowAfter(false);
+    setTimeout(() => {
+      setShowAfter(true);
+      setIsAnimating(false);
+    }, 800);
+  }, []);
+
+  return (
+    <section className="py-14 px-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-y border-blue-100">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-8">
+          <div className="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-3 border border-blue-200">
+            今すぐ体験
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">実際にAI生成を体験してみる</h2>
+          <p className="text-sm text-gray-500">商品を選んでボタンを押すだけ。30秒でBefore/Afterが分かります。</p>
+        </div>
+
+        {/* 商品選択 */}
+        <div className="flex flex-wrap gap-2 justify-center mb-5">
+          {Object.keys(DEMO_TEMPLATES).map((name) => (
+            <button
+              key={name}
+              onClick={() => selectTemplate(name)}
+              className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${productName === name ? "bg-blue-600 text-white shadow-md" : "bg-white text-gray-700 border border-gray-200 hover:border-blue-400"}`}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+
+        {activeDemo && (
+          <div className="bg-white rounded-2xl border-2 border-blue-200 shadow-lg p-5">
+            {/* Before */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded">BEFORE</span>
+                <span className="text-xs text-gray-400">手書きの説明文</span>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-600">
+                {activeDemo.before}
+              </div>
+            </div>
+
+            {/* Generate Button */}
+            {!showAfter && (
+              <div className="text-center mb-4">
+                <button
+                  onClick={handleGenerate}
+                  disabled={isAnimating}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl transition-all disabled:opacity-60 shadow-md shadow-blue-200"
+                >
+                  {isAnimating ? (
+                    <span className="flex items-center gap-2">
+                      <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      AI生成中...
+                    </span>
+                  ) : "AIで説明文を生成する ✨"}
+                </button>
+              </div>
+            )}
+
+            {/* After */}
+            {showAfter && (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="bg-green-100 text-green-600 text-xs font-bold px-2 py-0.5 rounded">AI AFTER</span>
+                  <span className="text-xs text-gray-400">{activeDemo.platform}最適化・30秒で生成</span>
+                  <span className="ml-auto text-xs font-bold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">CVRスコア: {activeDemo.cvr}/100</span>
+                </div>
+                <div className="bg-green-50 border-2 border-green-300 rounded-xl p-3 text-sm text-gray-800 leading-relaxed font-medium mb-3">
+                  {activeDemo.after}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(activeDemo.after); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                    className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors"
+                  >
+                    {copied ? "✓ コピー完了！" : "📋 コピーする"}
+                  </button>
+                  <Link href="/tool" className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-colors text-center">
+                    自分の商品で試す →
+                  </Link>
+                </div>
+                <button onClick={() => setShowAfter(false)} className="w-full text-xs text-gray-400 hover:text-gray-600 mt-2 text-center">もう一度生成する</button>
+              </div>
+            )}
+          </div>
+        )}
+        <p className="text-xs text-gray-400 text-center mt-3">※このデモは固定サンプルです。実際のAIは入力した商品情報をもとに最適化した文章を生成します。</p>
+      </div>
+    </section>
+  );
+}
 
 // metadata はサーバーコンポーネント専用のため、metaタグは直接head内に記述
 
@@ -135,6 +269,9 @@ export default function LandingPage() {
           無料で説明文を生成する →
         </Link>
       </section>
+
+      {/* LP内インタラクティブデモ */}
+      <InteractiveDemo />
 
       {/* ROI Stats */}
       <section className="bg-blue-600 py-10">
