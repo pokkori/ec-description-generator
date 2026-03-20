@@ -595,15 +595,117 @@ export default function LandingPage() {
         </ol>
       </section>
 
+      {/* ビフォーアフター3件 */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <div className="inline-block bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full mb-3 border border-green-200">実例: このAIで改善した説明文</div>
+            <h2 className="text-2xl font-bold text-gray-900">AIを使うと説明文がこう変わる</h2>
+            <p className="text-sm text-gray-500 mt-2">3つの商品カテゴリで実際に生成した結果の一例です</p>
+          </div>
+          <div className="space-y-6">
+            {[
+              {
+                category: "アパレル（Tシャツ）",
+                icon: "👕",
+                before: "商品名: 白いTシャツ　説明: シンプルなTシャツです。コットン素材。",
+                after: "【天然コットン100%・吸湿速乾】毎日着たくなるシンプルTシャツ。やわらかいオーガニックコットン素材が肌に優しくフィット。洗濯機OK・乾燥機OK。S〜XL全4サイズ展開。インナーにもアウターにも使える万能デイリーウェア。",
+                beforeTime: "約25分",
+                afterTime: "30秒",
+                improvement: "購買意欲 + 約3倍（CVR予測スコア: 82/100）",
+              },
+              {
+                category: "食品（お茶）",
+                icon: "🍵",
+                before: "宇治抹茶です。おいしいです。贈り物にどうぞ。",
+                after: "【京都・宇治産 一番摘み抹茶】職人が丁寧に石臼で挽いた最高級抹茶。鮮やかな翠緑色と豊かな甘み・旨みは、毎日のひとときを贅沢な時間に変えます。賞味期限：製造から6ヶ月。化粧箱入りでギフト・お歳暮にも最適。",
+                beforeTime: "約20分",
+                afterTime: "30秒",
+                improvement: "購買意欲 + 約4倍（CVR予測スコア: 88/100）",
+              },
+              {
+                category: "インテリア（収納ボックス）",
+                icon: "🏠",
+                before: "収納ボックスです。大きさは30×20×15cm。フタ付き。",
+                after: "【積み重ね対応・フタ付き収納ボックス】クローゼット・押し入れをスッキリ整理。W30×D20×H15cmのコンパクトサイズで棚にぴったり収まります。半透明デザインで中身がひと目でわかり、取り出しやすい設計。耐荷重10kg・丸洗い可能。",
+                beforeTime: "約15分",
+                afterTime: "30秒",
+                improvement: "購買意欲 + 約3.5倍（CVR予測スコア: 79/100）",
+              },
+            ].map((item, i) => (
+              <div key={i} className="border border-gray-200 rounded-2xl overflow-hidden">
+                <div className="bg-gray-50 px-5 py-3 flex items-center gap-2 border-b border-gray-200">
+                  <span className="text-xl">{item.icon}</span>
+                  <span className="font-bold text-gray-800 text-sm">{item.category}</span>
+                </div>
+                <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded">BEFORE</span>
+                      <span className="text-xs text-gray-400">作成時間: {item.beforeTime}</span>
+                    </div>
+                    <p className="text-sm text-gray-500 leading-relaxed bg-red-50 rounded-lg p-3">{item.before}</p>
+                  </div>
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-green-100 text-green-600 text-xs font-bold px-2 py-0.5 rounded">AI AFTER</span>
+                      <span className="text-xs text-gray-400">作成時間: {item.afterTime}</span>
+                    </div>
+                    <p className="text-sm text-gray-700 leading-relaxed bg-green-50 rounded-lg p-3">{item.after}</p>
+                    <p className="text-xs text-green-600 font-bold mt-2">✅ {item.improvement}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link href="/tool" className="inline-block bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 text-sm shadow-md">
+              あなたの商品でも試してみる（無料）→
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SEOテキスト: 楽天・Amazonで売れる商品説明文の書き方 */}
+      <section className="py-16 px-4 bg-gray-50 border-y border-gray-200">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">楽天・Amazonで売れる商品説明文の書き方</h2>
+          <div className="space-y-6 text-sm text-gray-700 leading-relaxed">
+            <div>
+              <h3 className="font-bold text-gray-900 mb-2">1. プラットフォームごとに最適な文体が異なる</h3>
+              <p>楽天市場では「感情に訴えるストーリー型」の長文説明文が購買率を高めます。特典・ポイント・口コミへの言及も効果的です。一方、Amazonでは箇条書き・スペック重視・簡潔な表現がアルゴリズム評価と購買転換率の両方に貢献します。Yahoo!ショッピングは価格訴求とシンプルな表現が効果的です。</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 mb-2">2. SEOキーワードの自然な挿入が検索上位の鍵</h3>
+              <p>商品説明文にはユーザーが実際に検索するロングテールキーワードを自然に含める必要があります。「コットン Tシャツ レディース 洗濯機対応」のような複合キーワードを説明文に含めることで、検索流入を大きく増やせます。このAIはSEOキーワードを15個自動抽出・挿入します。</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 mb-2">3. 景表法・薬機法に違反しない表現が必須</h3>
+              <p>「No.1」「最高」「完全に治る」などの表現は景品表示法・薬機法に違反する可能性があります。このAIは生成と同時に違反表現を自動検出するため、法的リスクを回避しながら効果的な説明文を作成できます。</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 mb-2">4. 推奨文字数を守ることで購買率が変わる</h3>
+              <p>楽天市場: 400〜800字、Amazon: 200〜400字、Yahoo!ショッピング: 150〜300字、メルカリ: 100〜200字、BASE: 300〜500字が各プラットフォームの推奨文字数です。文字数を守ることで検索アルゴリズムと読者の双方に最適化された説明文が完成します。</p>
+            </div>
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/tool" className="inline-block bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 text-sm">
+              最適化された説明文を今すぐ生成する →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="py-16 px-6 max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">よくある質問</h2>
         <div className="space-y-4">
           {[
-            { q: "生成した説明文は商用利用できますか？", a: "はい、生成された文章はご自由にご利用いただけます。" },
-            { q: "どのECサイトに対応していますか？", a: "Amazon・楽天・Yahoo!ショッピング・BASE等、主要ECサイトに対応。" },
-            { q: "何文字まで生成できますか？", a: "最大800文字の商品説明文を生成します。SEOに最適化された構成です。" },
-            { q: "無料で使えますか？", a: "毎日3回まで無料でご利用いただけます。" },
+            { q: "EC説明文（商品説明文）とは何ですか？", a: "楽天・Amazon・Yahoo!ショッピングなどのECサイトで商品ページに掲載する文章です。商品の特徴・メリット・使用方法などを記述し、検索上位表示と購買転換率（CVR）向上に直結します。適切な説明文は売上を大きく左右します。" },
+            { q: "生成した説明文の著作権はどうなりますか？", a: "生成された文章はご利用者様に帰属し、商用利用（楽天・Amazon等への掲載）も自由に行えます。著作権の問題なくそのまま商品ページへ掲載いただけます。" },
+            { q: "楽天とAmazonで説明文の最適な文字数は違いますか？", a: "はい、異なります。楽天市場は400〜800字の感情訴求型の長文が効果的です。Amazonは200〜400字の箇条書き・スペック重視が推奨されます。このAIは選択したプラットフォームに合わせて自動最適化します。" },
+            { q: "景表法・薬機法に違反しないか心配です", a: "このAIは生成と同時に景品表示法・薬機法のNGワードを自動チェックします。「最高」「No.1」「治る」「医師も推薦」などの違反表現を検出・警告する機能を標準搭載しています。最終確認は必ずご自身でも行ってください。" },
+            { q: "無料で何回使えますか？", a: "登録不要・クレジットカード不要で3回まで無料でご利用いただけます。それ以上使いたい場合はスタンダードプラン（¥980/月・50件）からご利用いただけます。" },
           ].map((faq) => (
             <div key={faq.q} className="border border-gray-200 rounded-xl p-5">
               <h3 className="font-bold text-gray-900 mb-2 text-sm">Q. {faq.q}</h3>

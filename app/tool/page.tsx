@@ -7,7 +7,7 @@ import { track } from '@vercel/analytics';
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
 type Platform = "rakuten" | "amazon" | "yahoo" | "mercari" | "base";
-type Tone = "professional" | "friendly" | "luxury";
+type Tone = "professional" | "friendly" | "luxury" | "casual";
 type KeywordStrength = "seo" | "balanced" | "natural";
 
 const FREE_LIMIT = 3;
@@ -118,11 +118,25 @@ function parseResult(text: string): ParsedResult {
 
 function CopyButton({ text, label = "コピー" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   return (
-    <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-      className="text-xs px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium transition-colors">
-      {copied ? "✓ コピー済み" : label}
-    </button>
+    <div className="relative inline-block">
+      <button
+        onClick={handleCopy}
+        className={`text-xs px-3 py-1 rounded-lg font-medium transition-all ${copied ? "bg-green-100 text-green-700 border border-green-300" : "bg-gray-100 hover:bg-gray-200 text-gray-600"}`}
+      >
+        {copied ? "✅ コピーしました！" : label}
+      </button>
+      {copied && (
+        <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap z-10 shadow-lg animate-bounce">
+          クリップボードにコピーしました
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -679,11 +693,12 @@ function ECToolInner() {
               {/* 文体トーン選択 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">文体トーン</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {([
-                    { value: "professional" as Tone, label: "プロ向け", icon: "💼", hint: "信頼感・実績・スペック重視" },
+                    { value: "professional" as Tone, label: "プロフェッショナル", icon: "💼", hint: "信頼感・実績・スペック重視" },
                     { value: "friendly" as Tone, label: "親しみやすい", icon: "😊", hint: "口コミ風・共感・日常生活" },
                     { value: "luxury" as Tone, label: "高級感", icon: "✨", hint: "ブランド・こだわり・特別感" },
+                    { value: "casual" as Tone, label: "カジュアル", icon: "🎉", hint: "若者向け・SNS映え・フレンドリー" },
                   ]).map(t => (
                     <button key={t.value} type="button" onClick={() => setTone(t.value)}
                       className={`py-2 px-2 rounded-lg border text-xs font-medium transition-colors text-left ${tone === t.value ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-700 border-gray-300 hover:border-indigo-400"}`}>
