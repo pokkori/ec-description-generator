@@ -12,6 +12,66 @@ type KeywordStrength = "seo" | "balanced" | "natural";
 
 const FREE_LIMIT = 3;
 const STORAGE_KEY = "ec_gen_count";
+const HISTORY_KEY = "ec_gen_history";
+
+// 生成履歴の型
+type HistoryEntry = {
+  id: number;
+  productName: string;
+  platform: string;
+  tone: string;
+  raw: string;
+  savedAt: string;
+};
+
+function saveHistory(productName: string, platform: string, tone: string, raw: string) {
+  try {
+    const history: HistoryEntry[] = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    const entry: HistoryEntry = {
+      id: Date.now(),
+      productName,
+      platform,
+      tone,
+      raw,
+      savedAt: new Date().toLocaleString("ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }),
+    };
+    history.unshift(entry);
+    if (history.length > 5) history.splice(5);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch { /* ignore */ }
+}
+
+function loadHistory(): HistoryEntry[] {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  } catch { return []; }
+}
+
+// 文字数カウンター + Amazon/楽天推奨ガイド
+function CharCountGuide({ text, platform }: { text: string; platform: string }) {
+  const len = text.length;
+  const guides: Record<string, { min: number; max: number; label: string }> = {
+    amazon: { min: 200, max: 400, label: "Amazon推奨: 200〜400字" },
+    rakuten: { min: 400, max: 800, label: "楽天推奨: 400〜800字" },
+    yahoo: { min: 150, max: 300, label: "Yahoo!推奨: 150〜300字" },
+    mercari: { min: 100, max: 200, label: "メルカリ推奨: 100〜200字" },
+    base: { min: 300, max: 500, label: "BASE推奨: 300〜500字" },
+  };
+  const guide = guides[platform] ?? guides.amazon;
+  const isOk = len >= guide.min && len <= guide.max;
+  const isTooShort = len < guide.min;
+  const color = isOk ? "text-green-600" : isTooShort ? "text-red-500" : "text-amber-600";
+  const bgColor = isOk ? "bg-green-50 border-green-200" : isTooShort ? "bg-red-50 border-red-200" : "bg-amber-50 border-amber-200";
+  return (
+    <div className={`mt-2 border rounded-lg px-3 py-2 flex items-center justify-between ${bgColor}`}>
+      <span className="text-xs text-gray-500">{guide.label}</span>
+      <div className="flex items-center gap-2">
+        <span className={`text-sm font-bold ${color}`}>{len}字</span>
+        <span className={`text-xs font-bold ${color}`}>{isOk ? "✓ 適正" : isTooShort ? "不足" : "超過"}</span>
+      </div>
+    </div>
+  );
+}
 
 type Section = { title: string; icon: string; content: string };
 type ParsedResult = { sections: Section[]; raw: string };
@@ -221,7 +281,7 @@ function ABTestCompare({ textA, textB, labelA, labelB }: { textA: string; textB:
   );
 }
 
-function ResultTabs({ parsed, productName, platform, rawText }: { parsed: ParsedResult; productName?: string; platform?: string; rawText?: string }) {
+function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: ParsedResult; productName?: string; platform?: string; rawText?: string; tone?: string }) {
   const [activeTab, setActiveTab] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const section = parsed.sections[activeTab];
@@ -278,6 +338,9 @@ function ResultTabs({ parsed, productName, platform, rawText }: { parsed: Parsed
           <CopyButton text={section.content} />
         </div>
         <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{section.content}</pre>
+        {section.title === "商品説明文" && (
+          <CharCountGuide text={section.content} platform={platform ?? "amazon"} />
+        )}
       </div>
       <div className="flex gap-2 justify-end flex-wrap">
         <CopyButton text={parsed.raw} label="📋 全文コピー" />
@@ -439,10 +502,13 @@ function ECToolInner() {
   const [showPayjp, setShowPayjp] = useState(false);
   const [payjpPlan, setPayjpPlan] = useState("standard");
   const [error, setError] = useState("");
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
     setUsageCount(parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10));
+    setHistory(loadHistory());
     // LPの料金プランボタンから直接決済フローに入る
     const plan = searchParams.get("plan");
     if (plan === "standard" || plan === "business" || plan === "enterprise") {
@@ -521,6 +587,11 @@ function ECToolInner() {
     setResults(newResults);
     setActiveResult(0);
     setLoading(false);
+    // 生成履歴に保存（最初の商品のみ）
+    if (newResults.length > 0 && newResults[0].parsed) {
+      saveHistory(newResults[0].product.productName, platform, tone, newResults[0].parsed.raw);
+      setHistory(loadHistory());
+    }
     if (currentCount >= FREE_LIMIT) setTimeout(() => setShowPaywall(true), 1500);
   };
 
@@ -674,7 +745,49 @@ function ECToolInner() {
 
           {/* 右：結果エリア */}
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 mb-2">生成結果</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-gray-700">生成結果</label>
+              {history.length > 0 && (
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className="text-xs text-blue-600 border border-blue-200 rounded-full px-3 py-1 hover:bg-blue-50 transition-colors"
+                >
+                  📋 過去の履歴 ({history.length}件)
+                </button>
+              )}
+            </div>
+
+            {/* 生成履歴パネル */}
+            {showHistory && history.length > 0 && (
+              <div className="mb-4 bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <p className="text-xs font-bold text-blue-700 mb-3">過去の生成結果（最大5件）</p>
+                <div className="space-y-2">
+                  {history.map((h) => (
+                    <div key={h.id} className="bg-white border border-blue-100 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-bold text-gray-800 truncate max-w-[160px]">{h.productName || "商品名なし"}</span>
+                        <span className="text-xs text-gray-400 shrink-0 ml-2">{h.savedAt}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded">{h.platform}</span>
+                        <span className="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded">{h.tone}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const parsed = parseResult(h.raw);
+                          setResults([{ product: { id: h.id, productName: h.productName, category: "", features: "", price: "" }, parsed, rawText: h.raw }]);
+                          setActiveResult(0);
+                          setShowHistory(false);
+                        }}
+                        className="text-xs text-blue-600 font-bold hover:text-blue-700"
+                      >
+                        この結果を再表示 →
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* 禁止ワードチェック結果 */}
             {ngWords.length > 0 && (
@@ -724,7 +837,7 @@ function ECToolInner() {
                   <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600">{results[activeResult].error}</div>
                 ) : results[activeResult]?.parsed ? (
                   <>
-                    <ResultTabs parsed={results[activeResult].parsed} productName={results[activeResult].product.productName} platform={platform} rawText={results[activeResult].rawText} />
+                    <ResultTabs parsed={results[activeResult].parsed} productName={results[activeResult].product.productName} platform={platform} rawText={results[activeResult].rawText} tone={tone} />
                     <button
                       onClick={handleRegenerate}
                       disabled={loading}
