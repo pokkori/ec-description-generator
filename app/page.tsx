@@ -229,6 +229,114 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* CVRスコア機能訴求セクション */}
+      <section className="py-16 px-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-y border-blue-100">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <div className="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-3 border border-blue-200">
+              新機能: リアルタイムCVR予測スコア
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              「この説明文は売れますか？」にAIが即答
+            </h2>
+            <p className="text-sm text-gray-600 max-w-xl mx-auto">
+              生成した説明文を5軸で0〜100点採点。テキストを編集するたびスコアがリアルタイム更新。改善ポイントまで具体的に提示します。
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8 items-start">
+            {/* モックアップ */}
+            <div className="bg-white rounded-2xl border-2 border-blue-200 shadow-lg p-5">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-bold text-gray-700">🎯 CVR予測スコア（リアルタイム採点）</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">高CVR見込み</span>
+              </div>
+              <div className="flex items-center gap-4 mb-4">
+                {/* 円形ゲージ モックアップ */}
+                <div className="shrink-0">
+                  <svg width="88" height="88" viewBox="0 0 88 88">
+                    <circle cx="44" cy="44" r="36" fill="none" stroke="#e5e7eb" strokeWidth="8" />
+                    <circle cx="44" cy="44" r="36" fill="none" stroke="#16a34a" strokeWidth="8"
+                      strokeDasharray="188 226" strokeLinecap="round" transform="rotate(-90 44 44)" />
+                    <text x="44" y="47" textAnchor="middle" dominantBaseline="middle"
+                      fontSize="20" fontWeight="900" fill="#16a34a">83</text>
+                    <text x="44" y="62" textAnchor="middle" fontSize="9" fill="#9ca3af">/100</text>
+                  </svg>
+                </div>
+                {/* 5軸バー モックアップ */}
+                <div className="flex-1 space-y-2">
+                  {[
+                    { label: "文字数", pct: 100, score: "20/20" },
+                    { label: "感情訴求", pct: 75, score: "15/20" },
+                    { label: "景表法クリア", pct: 100, score: "20/20" },
+                    { label: "スペック訴求", pct: 80, score: "16/20" },
+                    { label: "購買促進", pct: 60, score: "12/20" },
+                  ].map((item) => (
+                    <div key={item.label}>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-xs text-gray-600">{item.label}</span>
+                        <span className="text-xs font-bold text-green-600">{item.score}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-1.5">
+                        <div className="h-1.5 rounded-full bg-green-500" style={{ width: `${item.pct}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-amber-50 rounded-lg p-3">
+                <p className="text-xs font-bold text-gray-600 mb-1">スコアを上げるヒント</p>
+                <p className="text-xs text-gray-500">→ 購買促進: 「ぜひお試しください」等を追加</p>
+              </div>
+              <div className="mt-3 bg-blue-50 rounded-lg p-2 text-center">
+                <p className="text-xs text-blue-600 font-medium">✏️ テキストを編集するとスコアが自動更新されます</p>
+              </div>
+            </div>
+            {/* 説明テキスト */}
+            <div className="space-y-5">
+              {[
+                {
+                  icon: "📊",
+                  title: "5軸で採点する独自アルゴリズム",
+                  desc: "「文字数・感情訴求ワード・景表法クリア・スペック訴求・購買促進」の5軸で採点。どの軸が弱いか一目でわかります。",
+                  color: "bg-blue-50 border-blue-200",
+                },
+                {
+                  icon: "⚡",
+                  title: "編集するたびにリアルタイム更新",
+                  desc: "説明文タブで直接テキストを編集すると400ms後にスコアが自動更新。改善→確認→コピーが1画面で完結します。",
+                  color: "bg-green-50 border-green-200",
+                },
+                {
+                  icon: "⚖️",
+                  title: "景表法NGワードを即座に検出",
+                  desc: "「最高」「No.1」「日本一」などの違反ワードが含まれると即座に警告。法的リスクを回避しながらスコアを上げられます。",
+                  color: "bg-amber-50 border-amber-200",
+                },
+                {
+                  icon: "🎯",
+                  title: "プラットフォーム別に最適化採点",
+                  desc: "楽天は400〜800字・Amazonは200〜400字など、選んだECモールの基準でスコアを計算。モール最適化が確実になります。",
+                  color: "bg-purple-50 border-purple-200",
+                },
+              ].map((item) => (
+                <div key={item.title} className={`rounded-xl border ${item.color} p-4 flex gap-3`}>
+                  <span className="text-2xl shrink-0">{item.icon}</span>
+                  <div>
+                    <p className="font-bold text-gray-900 text-sm mb-1">{item.title}</p>
+                    <p className="text-xs text-gray-600 leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+              <div className="text-center">
+                <Link href="/tool" className="inline-block bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 text-sm shadow-md">
+                  CVRスコアを確認する（無料）→
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 景表法・薬機法チェック差別化セクション */}
       <section className="py-14 px-4 bg-amber-50 border-y border-amber-200">
         <div className="max-w-3xl mx-auto">

@@ -47,6 +47,124 @@ function loadHistory(): HistoryEntry[] {
   } catch { return []; }
 }
 
+// CVRスコア採点ロジック（フロントエンド・プラットフォーム別5軸）
+function calculateCVRScore(text: string, platform: string): {
+  score: number;
+  breakdown: { label: string; score: number; maxScore: number; hint: string }[];
+} {
+  const breakdown: { label: string; score: number; maxScore: number; hint: string }[] = [];
+
+  // 1. 文字数チェック（プラットフォーム別推奨）
+  const lengthRanges: Record<string, [number, number]> = {
+    amazon: [200, 400], rakuten: [400, 800], yahoo: [150, 300],
+    mercari: [100, 200], base: [300, 500]
+  };
+  const [min, max] = lengthRanges[platform] || [200, 500];
+  const len = text.length;
+  const lenScore = len >= min && len <= max ? 20 : len >= min * 0.6 ? 10 : 5;
+  breakdown.push({ label: "文字数", score: lenScore, maxScore: 20, hint: `推奨${min}〜${max}字（現在${len}字）` });
+
+  // 2. 感情訴求ワード
+  const emotionWords = ["限定", "特別", "人気", "厳選", "こだわり", "国産", "高品質", "おすすめ", "安心", "信頼", "丁寧", "上質"];
+  const emotionCount = emotionWords.filter(w => text.includes(w)).length;
+  const emotionScore = Math.min(20, emotionCount * 5);
+  breakdown.push({ label: "感情訴求", score: emotionScore, maxScore: 20, hint: emotionCount > 0 ? `${emotionCount}個の訴求ワード検出` : "「限定」「こだわり」等のワードを追加" });
+
+  // 3. 景表法NGワード検出（0点ペナルティ）
+  const ngWords = ["最高", "日本一", "No.1", "絶対", "完全", "100%保証", "必ず", "ナンバーワン", "業界初"];
+  const ngFound = ngWords.filter(w => text.includes(w));
+  const ngScore = ngFound.length === 0 ? 20 : Math.max(0, 20 - ngFound.length * 7);
+  breakdown.push({ label: "景表法クリア", score: ngScore, maxScore: 20, hint: ngFound.length > 0 ? `⚠️「${ngFound.slice(0, 2).join("」「")}」は使用注意` : "✅ NGワードなし" });
+
+  // 4. 数値・スペック訴求
+  const numberMatches = text.match(/\d+/g) || [];
+  const numberScore = numberMatches.length >= 3 ? 20 : numberMatches.length >= 1 ? 12 : 4;
+  breakdown.push({ label: "スペック訴求", score: numberScore, maxScore: 20, hint: numberMatches.length > 0 ? `✅ 数値${numberMatches.length}箇所` : "サイズ・重量・成分%等を追加" });
+
+  // 5. 行動促進ワード
+  const ctaWords = ["ぜひ", "お試し", "今すぐ", "チェック", "どうぞ", "ご確認", "ぜひお試し", "お求め"];
+  const ctaCount = ctaWords.filter(w => text.includes(w)).length;
+  const ctaScore = ctaCount >= 2 ? 20 : ctaCount === 1 ? 13 : 4;
+  breakdown.push({ label: "購買促進", score: ctaScore, maxScore: 20, hint: ctaCount > 0 ? `✅ 行動促進ワード${ctaCount}個` : "「ぜひお試しください」等を追加" });
+
+  const total = breakdown.reduce((sum, b) => sum + b.score, 0);
+  return { score: total, breakdown };
+}
+
+// CVRスコアパネル（円形SVGゲージ + 5軸ブレークダウン）
+function CVRScorePanel({ text, platform }: { text: string; platform: string }) {
+  const { score, breakdown } = calculateCVRScore(text, platform);
+  const color = score >= 75 ? "#16a34a" : score >= 50 ? "#d97706" : "#dc2626";
+  const bgClass = score >= 75 ? "bg-green-50 border-green-300" : score >= 50 ? "bg-amber-50 border-amber-300" : "bg-red-50 border-red-300";
+  const badgeClass = score >= 75 ? "bg-green-100 text-green-700" : score >= 50 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700";
+  const badge = score >= 75 ? "高CVR見込み" : score >= 50 ? "改善で伸びる" : "要改善";
+  const barClass = score >= 75 ? "bg-green-500" : score >= 50 ? "bg-amber-500" : "bg-red-500";
+
+  // SVG 円形ゲージ
+  const radius = 36;
+  const circumference = 2 * Math.PI * radius;
+  const dash = (score / 100) * circumference;
+
+  const hints = breakdown.filter(b => b.score < b.maxScore);
+
+  return (
+    <div className={`border-2 rounded-xl p-4 mb-4 ${bgClass}`}>
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-sm font-bold text-gray-700">🎯 CVR予測スコア（リアルタイム採点）</span>
+        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${badgeClass}`}>{badge}</span>
+      </div>
+
+      {/* 円形ゲージ + 5軸バー */}
+      <div className="flex items-center gap-4">
+        {/* 円形SVGゲージ */}
+        <div className="shrink-0">
+          <svg width="88" height="88" viewBox="0 0 88 88">
+            <circle cx="44" cy="44" r={radius} fill="none" stroke="#e5e7eb" strokeWidth="8" />
+            <circle
+              cx="44" cy="44" r={radius}
+              fill="none" stroke={color} strokeWidth="8"
+              strokeDasharray={`${dash} ${circumference}`}
+              strokeLinecap="round"
+              transform="rotate(-90 44 44)"
+              style={{ transition: "stroke-dasharray 0.8s ease" }}
+            />
+            <text x="44" y="47" textAnchor="middle" dominantBaseline="middle"
+              fontSize="20" fontWeight="900" fill={color}>{score}</text>
+            <text x="44" y="62" textAnchor="middle" fontSize="9" fill="#9ca3af">/100</text>
+          </svg>
+        </div>
+
+        {/* 5軸ブレークダウン */}
+        <div className="flex-1 space-y-1.5">
+          {breakdown.map((b, i) => (
+            <div key={i}>
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-xs text-gray-600">{b.label}</span>
+                <span className={`text-xs font-bold ${b.score === b.maxScore ? "text-green-600" : "text-amber-600"}`}>{b.score}/{b.maxScore}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                <div className={`h-1.5 rounded-full transition-all duration-700 ${barClass}`} style={{ width: `${(b.score / b.maxScore) * 100}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 改善ヒント */}
+      {hints.length > 0 && (
+        <div className="mt-3 bg-white/70 rounded-lg p-3 space-y-1">
+          <p className="text-xs font-bold text-gray-600 mb-1">スコアを上げるヒント</p>
+          {hints.map((b, i) => (
+            <p key={i} className="text-xs text-gray-500 flex items-start gap-1">
+              <span className="text-amber-500 shrink-0">→</span>{b.label}: {b.hint}
+            </p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // 文字数カウンター + Amazon/楽天推奨ガイド
 function CharCountGuide({ text, platform }: { text: string; platform: string }) {
   const len = text.length;
@@ -298,10 +416,29 @@ function ABTestCompare({ textA, textB, labelA, labelB }: { textA: string; textB:
 function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: ParsedResult; productName?: string; platform?: string; rawText?: string; tone?: string }) {
   const [activeTab, setActiveTab] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
-  const section = parsed.sections[activeTab];
   const cvrScore = rawText ? extractCvrScore(rawText) : null;
   const descSection = parsed.sections.find(s => s.title === "商品説明文");
-  const qualityText = descSection?.content ?? parsed.raw;
+  const [editedDesc, setEditedDesc] = useState(descSection?.content ?? "");
+  const [debouncedDesc, setDebouncedDesc] = useState(editedDesc);
+
+  // descSection が変わったら editedDesc をリセット
+  useEffect(() => {
+    setEditedDesc(descSection?.content ?? "");
+    setDebouncedDesc(descSection?.content ?? "");
+  }, [descSection?.content]);
+
+  // debounce: 400ms後にスコア更新
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedDesc(editedDesc), 400);
+    return () => clearTimeout(timer);
+  }, [editedDesc]);
+
+  // activeTab のセクション（editedDesc を商品説明文に反映）
+  const currentSections = parsed.sections.map(s =>
+    s.title === "商品説明文" ? { ...s, content: editedDesc } : s
+  );
+  const section = currentSections[activeTab];
+  const qualityText = editedDesc || parsed.raw;
 
   const handlePrint = () => {
     const html = `<html><head><title>EC商品説明文</title><style>body{font-family:sans-serif;padding:32px;line-height:1.8;white-space:pre-wrap;}</style></head><body>${parsed.raw.replace(/</g, "&lt;")}</body></html>`;
@@ -326,10 +463,12 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
         </div>
       </div>
       {cvrScore !== null && <CvrScoreCard score={cvrScore} />}
+      {/* リアルタイムCVRスコアパネル（商品説明文テキスト連動） */}
+      <CVRScorePanel text={debouncedDesc || qualityText} platform={platform ?? "amazon"} />
       <QualityScoreCard text={qualityText} />
 
       <div className="flex gap-1 flex-wrap">
-        {parsed.sections.map((s, i) => (
+        {currentSections.map((s, i) => (
           <button key={i} onClick={() => setActiveTab(i)}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${activeTab === i ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
             <span>{s.icon}</span><span>{s.title}</span>
@@ -343,7 +482,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
 
       {/* ECサイト風プレビュー */}
       {showPreview && (
-        <ECPreview parsed={parsed} productName={productName} platform={platform} />
+        <ECPreview parsed={{ ...parsed, sections: currentSections }} productName={productName} platform={platform} />
       )}
 
       <div className="bg-white border border-gray-200 rounded-xl p-4 min-h-[280px]">
@@ -351,9 +490,20 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
           <span className="text-sm font-semibold text-gray-700">{section.icon} {section.title}</span>
           <CopyButton text={section.content} />
         </div>
-        <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{section.content}</pre>
-        {section.title === "商品説明文" && (
-          <CharCountGuide text={section.content} platform={platform ?? "amazon"} />
+        {section.title === "商品説明文" ? (
+          <>
+            <textarea
+              value={editedDesc}
+              onChange={e => setEditedDesc(e.target.value)}
+              rows={10}
+              className="w-full text-sm text-gray-800 font-sans leading-relaxed border border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y"
+              placeholder="説明文を直接編集するとCVRスコアがリアルタイムで更新されます"
+            />
+            <p className="text-xs text-blue-500 mt-1">✏️ テキストを編集するとCVRスコアが自動更新されます</p>
+            <CharCountGuide text={editedDesc} platform={platform ?? "amazon"} />
+          </>
+        ) : (
+          <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{section.content}</pre>
         )}
       </div>
       <div className="flex gap-2 justify-end flex-wrap">
