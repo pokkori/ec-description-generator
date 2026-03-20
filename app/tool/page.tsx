@@ -36,7 +36,7 @@ function saveHistory(productName: string, platform: string, tone: string, raw: s
       savedAt: new Date().toLocaleString("ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }),
     };
     history.unshift(entry);
-    if (history.length > 5) history.splice(5);
+    if (history.length > 20) history.splice(20);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
   } catch { /* ignore */ }
 }
@@ -502,6 +502,11 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
             <p className="text-xs text-blue-500 mt-1">✏️ テキストを編集するとCVRスコアが自動更新されます</p>
             <CharCountGuide text={editedDesc} platform={platform ?? "amazon"} />
           </>
+        ) : section.title === "SEOキーワード" ? (
+          <>
+            <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{section.content}</pre>
+            <SeoKeywordBar keywords={section.content} />
+          </>
         ) : (
           <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{section.content}</pre>
         )}
@@ -553,6 +558,104 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
         <p className="text-xs text-slate-400 text-center mt-2">※ 広告・PR（BASE公式サイトに遷移します）</p>
       </div>
       </div>
+    </div>
+  );
+}
+
+// SEOキーワード強度バー（キーワードセクションの可視化）
+function SeoKeywordBar({ keywords }: { keywords: string }) {
+  if (!keywords.trim()) return null;
+  const kws = keywords.split(/[,、\n]/).map(k => k.trim()).filter(k => k.length > 0);
+  const total = kws.length;
+  const strengthScore = Math.min(100, Math.round((total / 15) * 100));
+  const color = strengthScore >= 80 ? "bg-green-500" : strengthScore >= 50 ? "bg-amber-500" : "bg-red-400";
+  const label = strengthScore >= 80 ? "強い" : strengthScore >= 50 ? "普通" : "弱い";
+  const labelColor = strengthScore >= 80 ? "text-green-700" : strengthScore >= 50 ? "text-amber-700" : "text-red-600";
+  return (
+    <div className="mt-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs text-gray-500">🔍 SEOキーワード強度 ({total}個)</span>
+        <span className={`text-xs font-bold ${labelColor}`}>{label}</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className={`h-2 rounded-full transition-all duration-700 ${color}`} style={{ width: `${strengthScore}%` }} />
+      </div>
+      <p className="text-xs text-gray-400 mt-1">推奨: 12〜15個｜現在{total}個{total < 12 ? "（追加推奨）" : total > 18 ? "（多すぎ注意）" : "（最適）"}</p>
+    </div>
+  );
+}
+
+// 3プラットフォーム同時比較パネル
+type MultiPlatformResult = { platform: string; platformLabel: string; parsed: ParsedResult; rawText: string; cvrScore: number | null };
+
+function MultiPlatformPanel({ results, onClose }: { results: MultiPlatformResult[]; onClose: () => void }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const platformColors: Record<string, string> = {
+    rakuten: "bg-red-600", amazon: "bg-orange-500", yahoo: "bg-purple-600"
+  };
+  const handleCopy = (text: string, idx: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
+  return (
+    <div className="mt-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-300 rounded-2xl p-4">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm font-bold text-indigo-800">🔀 3プラットフォーム同時比較</p>
+        <button onClick={onClose} className="text-xs text-gray-400 hover:text-gray-600 bg-white border border-gray-200 px-2 py-0.5 rounded-full">閉じる</button>
+      </div>
+      {/* プラットフォーム選択タブ */}
+      <div className="flex gap-1 mb-3">
+        {results.map((r, i) => (
+          <button key={i} onClick={() => setActiveIdx(i)}
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeIdx === i ? `${platformColors[r.platform] ?? "bg-blue-600"} text-white shadow` : "bg-white text-gray-600 border border-gray-200 hover:border-indigo-300"}`}>
+            {r.platformLabel}
+            {r.cvrScore !== null && (
+              <span className={`block text-xs ${activeIdx === i ? "text-white/80" : "text-gray-400"}`}>CVR {r.cvrScore}pt</span>
+            )}
+          </button>
+        ))}
+      </div>
+      {/* CVR比較バー */}
+      <div className="bg-white border border-gray-200 rounded-xl p-3 mb-3">
+        <p className="text-xs font-bold text-gray-600 mb-2">CVR予測スコア比較</p>
+        {results.map((r, i) => (
+          <div key={i} className="mb-1.5">
+            <div className="flex items-center justify-between mb-0.5">
+              <span className="text-xs text-gray-600">{r.platformLabel}</span>
+              <span className="text-xs font-bold text-gray-800">{r.cvrScore ?? "—"}/100</span>
+            </div>
+            <div className="w-full bg-gray-100 rounded-full h-2">
+              <div
+                className={`h-2 rounded-full transition-all duration-700 ${(r.cvrScore ?? 0) >= 70 ? "bg-green-500" : (r.cvrScore ?? 0) >= 50 ? "bg-amber-500" : "bg-red-400"}`}
+                style={{ width: `${r.cvrScore ?? 0}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* 選択プラットフォームの説明文プレビュー */}
+      {results[activeIdx] && (
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-gray-700">📝 商品説明文</span>
+            <button
+              onClick={() => {
+                const desc = results[activeIdx].parsed.sections.find(s => s.title === "商品説明文")?.content ?? results[activeIdx].rawText;
+                handleCopy(desc, activeIdx);
+              }}
+              className={`text-xs px-3 py-1 rounded-lg font-medium transition-all ${copiedIdx === activeIdx ? "bg-green-100 text-green-700 border border-green-300" : "bg-gray-100 hover:bg-gray-200 text-gray-600"}`}
+            >
+              {copiedIdx === activeIdx ? "✅ コピーしました" : "コピー"}
+            </button>
+          </div>
+          <p className="text-xs text-gray-700 whitespace-pre-wrap leading-relaxed">
+            {results[activeIdx].parsed.sections.find(s => s.title === "商品説明文")?.content?.slice(0, 300) ?? results[activeIdx].rawText.slice(0, 300)}
+            {((results[activeIdx].parsed.sections.find(s => s.title === "商品説明文")?.content?.length ?? 0) > 300) ? "..." : ""}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -668,6 +771,9 @@ function ECToolInner() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [multiResults, setMultiResults] = useState<MultiPlatformResult[]>([]);
+  const [multiLoading, setMultiLoading] = useState(false);
+  const [showMultiCompare, setShowMultiCompare] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -722,6 +828,60 @@ function ECToolInner() {
       }
     }
     return { result: parseResult(accumulated), newCount, ngWordsFound, rawText: accumulated };
+  };
+
+  const handleMultiGenerate = async () => {
+    const validProducts = products.filter(p => p.productName && p.features);
+    if (validProducts.length === 0) { setError("商品名と特徴を入力してください"); return; }
+    if (isLimitReached) { track('paywall_shown', { service: 'EC説明文生成AI' }); setShowPaywall(true); return; }
+    setMultiLoading(true);
+    setMultiResults([]);
+    track('multi_platform_generate', { service: 'EC説明文生成AI' });
+    const targetPlatforms: { value: Platform; label: string }[] = [
+      { value: "amazon", label: "Amazon" },
+      { value: "rakuten", label: "楽天市場" },
+      { value: "yahoo", label: "Yahoo!ショッピング" },
+    ];
+    try {
+      let currentCount = usageCount;
+      const mResults = await Promise.all(targetPlatforms.map(async (p) => {
+        const product = validProducts[0];
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...product, platform: p.value, tone, keywordStrength }),
+        });
+        if (!res.ok) return null;
+        const reader = res.body?.getReader();
+        const decoder = new TextDecoder();
+        let accumulated = "";
+        while (reader) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          if (chunk.includes("\nDONE:")) {
+            const idx = chunk.indexOf("\nDONE:");
+            accumulated += chunk.slice(0, idx);
+            try {
+              const meta = JSON.parse(chunk.slice(idx + 6));
+              currentCount = meta.count ?? currentCount;
+            } catch { /* ignore */ }
+          } else {
+            accumulated += chunk;
+          }
+        }
+        const parsed = parseResult(accumulated);
+        const cvrScore = extractCvrScore(accumulated) ?? calculateCVRScore(accumulated, p.value).score;
+        return { platform: p.value, platformLabel: p.label, parsed, rawText: accumulated, cvrScore } as MultiPlatformResult;
+      }));
+      localStorage.setItem(STORAGE_KEY, String(currentCount));
+      setUsageCount(currentCount);
+      setMultiResults(mResults.filter((r): r is MultiPlatformResult => r !== null));
+      setShowMultiCompare(true);
+      if (currentCount >= FREE_LIMIT) setTimeout(() => setShowPaywall(true), 1500);
+    } finally {
+      setMultiLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -905,6 +1065,15 @@ function ECToolInner() {
                   ? `${products.filter(p => p.productName && p.features).length}商品をまとめ生成する`
                   : "商品説明文セットを生成する（無料）"}
               </button>
+              {/* 3プラットフォーム同時比較ボタン */}
+              <button
+                type="button"
+                onClick={handleMultiGenerate}
+                disabled={multiLoading || loading}
+                className="w-full font-bold py-2.5 rounded-xl text-indigo-700 bg-indigo-50 border-2 border-indigo-300 hover:bg-indigo-100 disabled:opacity-50 transition-colors text-sm"
+              >
+                {multiLoading ? "3プラットフォーム同時生成中..." : "🔀 Amazon・楽天・Yahoo! 3サイト同時比較"}
+              </button>
             </form>
           </div>
 
@@ -925,7 +1094,7 @@ function ECToolInner() {
             {/* 生成履歴パネル */}
             {showHistory && history.length > 0 && (
               <div className="mb-4 bg-blue-50 border border-blue-200 rounded-xl p-4">
-                <p className="text-xs font-bold text-blue-700 mb-3">過去の生成結果（最大5件）</p>
+                <p className="text-xs font-bold text-blue-700 mb-3">過去の生成結果（最大20件）</p>
                 <div className="space-y-2">
                   {history.map((h) => (
                     <div key={h.id} className="bg-white border border-blue-100 rounded-lg p-3">
@@ -952,6 +1121,14 @@ function ECToolInner() {
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* 3プラットフォーム同時比較結果 */}
+            {showMultiCompare && multiResults.length > 0 && (
+              <MultiPlatformPanel
+                results={multiResults}
+                onClose={() => setShowMultiCompare(false)}
+              />
             )}
 
             {/* 禁止ワードチェック結果 */}
