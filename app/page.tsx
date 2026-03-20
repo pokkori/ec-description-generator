@@ -384,6 +384,167 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* 業種別テンプレートパック訴求 */}
+      <section className="py-14 px-4 bg-blue-50 border-y border-blue-100">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-3 border border-blue-300">📦 業種別テンプレートパック</div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">あなたの商品カテゴリに最適化されたテンプレートで生成</h2>
+            <p className="text-sm text-gray-600 max-w-xl mx-auto">アパレル・食品・雑貨・美容・デジタル — カテゴリを選ぶだけで、そのジャンルに最適なSEOキーワードと文章構成を自動適用</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {[
+              {
+                icon: "👗",
+                cat: "アパレル・ファッション",
+                keywords: ["素材・生地感", "サイズ展開", "着用シーン", "コーデ提案"],
+                platform: "楽天・Yahoo!向け感情訴求",
+                color: "border-pink-200 bg-pink-50",
+              },
+              {
+                icon: "🍱",
+                cat: "食品・グルメ",
+                keywords: ["産地・原材料", "製法こだわり", "味の特徴", "賞味期限"],
+                platform: "楽天・Amazon食品向け詳細記載",
+                color: "border-orange-200 bg-orange-50",
+              },
+              {
+                icon: "🏠",
+                cat: "インテリア・雑貨",
+                keywords: ["サイズ・素材", "デザイン特徴", "使用シーン", "組立・設置"],
+                platform: "Amazon・BASE向けスペック詳細",
+                color: "border-green-200 bg-green-50",
+              },
+              {
+                icon: "💄",
+                cat: "コスメ・ビューティー",
+                keywords: ["成分・配合", "使用感・テクスチャ", "効果・悩み解決", "肌タイプ"],
+                platform: "楽天・Amazon美容向け薬機法対応",
+                color: "border-rose-200 bg-rose-50",
+              },
+              {
+                icon: "📱",
+                cat: "デジタル・家電",
+                keywords: ["スペック詳細", "互換性・対応機種", "使い方・操作", "保証・サポート"],
+                platform: "Amazon・Yahoo!向けスペック重視",
+                color: "border-blue-200 bg-blue-50",
+              },
+              {
+                icon: "🎁",
+                cat: "ギフト・プレゼント",
+                keywords: ["ラッピング対応", "送り先・シーン", "熨斗・メッセージ", "予算帯"],
+                platform: "楽天・Yahoo!ギフト向けシーン訴求",
+                color: "border-purple-200 bg-purple-50",
+              },
+            ].map((item, i) => (
+              <div key={i} className={`rounded-xl border-2 ${item.color} p-4`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">{item.icon}</span>
+                  <h3 className="font-bold text-gray-900 text-sm">{item.cat}</h3>
+                </div>
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {item.keywords.map(kw => (
+                    <span key={kw} className="text-xs bg-white border border-gray-200 text-gray-600 px-1.5 py-0.5 rounded">#{kw}</span>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500">{item.platform}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <Link href="/tool" className="inline-block bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 shadow-md text-sm">
+              業種別テンプレートで説明文を生成する（無料）→
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* プラットフォーム別最適化詳細比較表 */}
+      <section className="py-14 px-4 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="inline-block bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full mb-3">🛒 モール別最適化の違い</div>
+            <h2 className="text-2xl font-bold text-gray-900">同じ商品でも、モールによって最適な文章は違う</h2>
+            <p className="text-sm text-gray-500 mt-2">AIが各モールのアルゴリズムと読者心理に合わせて自動最適化します</p>
+          </div>
+          <div className="overflow-x-auto rounded-2xl border border-gray-200">
+            <table className="w-full text-sm">
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="px-4 py-3 text-left font-bold">モール</th>
+                  <th className="px-4 py-3 text-left font-bold">重視ポイント</th>
+                  <th className="px-4 py-3 text-left font-bold">文章スタイル</th>
+                  <th className="px-4 py-3 text-left font-bold">最適文字数</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {[
+                  { mall: "🛒 楽天市場", focus: "感情訴求・特典・ポイント", style: "口コミ風・感情的・長文", chars: "400〜800字" },
+                  { mall: "📦 Amazon", focus: "SEOキーワード・スペック", style: "箇条書き・数値・簡潔", chars: "200〜400字" },
+                  { mall: "🛍️ Yahoo!", focus: "価格訴求・シンプル", style: "要点を絞ったシンプル文", chars: "150〜300字" },
+                  { mall: "♻️ メルカリ", focus: "状態・信頼感・迅速性", style: "正直な状態記載・丁寧語", chars: "100〜200字" },
+                  { mall: "🏪 BASE", focus: "ブランドストーリー・感性", style: "世界観・こだわり・詩的", chars: "300〜500字" },
+                ].map((row, i) => (
+                  <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <td className="px-4 py-3 font-bold text-gray-800">{row.mall}</td>
+                    <td className="px-4 py-3 text-gray-600 text-xs">{row.focus}</td>
+                    <td className="px-4 py-3 text-gray-600 text-xs">{row.style}</td>
+                    <td className="px-4 py-3 text-blue-600 font-bold text-xs">{row.chars}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-5 text-center">
+            <Link href="/tool" className="inline-block bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 text-sm">
+              モール別に最適化された説明文を生成する →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* セクション別コピー機能訴求 */}
+      <section className="py-14 px-4 bg-white border-y border-gray-100">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-3">使いやすさ</div>
+            <h2 className="text-2xl font-bold text-gray-900">パーツ別コピーで、作業効率が劇的にアップ</h2>
+            <p className="text-sm text-gray-500 mt-2">タイトル・キャッチコピー・説明文・SEOキーワードを個別にコピー。必要な部分だけを即座に活用できます</p>
+          </div>
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6">
+            <div className="space-y-3">
+              {[
+                { icon: "📌", label: "商品タイトル案（3パターン）", desc: "「コピー」ボタンで即コピー → 楽天・Amazon管理画面に貼り付け", color: "blue" },
+                { icon: "✨", label: "キャッチコピー", desc: "SNS投稿・バナー広告のコピーとしてそのまま使える", color: "amber" },
+                { icon: "📝", label: "商品説明文（300〜500字）", desc: "プラットフォーム別に最適な文字数・文体で生成。景表法チェック済み", color: "green" },
+                { icon: "🔍", label: "SEOキーワード（15個）", desc: "検索上位狙いのキーワードを抽出。タグ・属性設定にそのまま利用可", color: "purple" },
+                { icon: "💬", label: "Q&A（3問）", desc: "商品ページのFAQとしてそのまま使えるQ&Aを自動生成", color: "rose" },
+              ].map((item, i) => (
+                <div key={i} className={`flex items-center gap-4 bg-white border border-${item.color}-100 rounded-xl p-4`}>
+                  <span className="text-2xl shrink-0">{item.icon}</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-gray-800">{item.label}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                  </div>
+                  <div className={`shrink-0 bg-${item.color}-100 text-${item.color}-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-${item.color}-200`}>
+                    📋 コピー
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 bg-blue-600 rounded-xl p-4 text-center">
+              <p className="text-white font-bold text-sm mb-1">全文コピー・印刷・PDF保存も1クリック</p>
+              <p className="text-blue-100 text-xs">ショップ管理ツール・Excelへのインポートもかんたん</p>
+            </div>
+          </div>
+          <div className="text-center mt-6">
+            <Link href="/tool" className="inline-block bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 text-sm">
+              パーツ別コピーを試す（無料）→
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* A/Bテスト機能訴求 */}
       <section className="py-14 px-4 bg-indigo-50">
         <div className="max-w-3xl mx-auto">
