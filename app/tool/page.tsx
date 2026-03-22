@@ -245,6 +245,7 @@ function CopyButton({ text, label = "コピー" }: { text: string; label?: strin
     <div className="relative inline-block">
       <button
         onClick={handleCopy}
+        aria-label={copied ? "コピーしました" : `${label}をクリップボードにコピーする`}
         className={`text-xs px-3 py-1 rounded-lg font-medium transition-all ${copied ? "bg-green-100 text-green-700 border border-green-300" : "bg-gray-100 hover:bg-gray-200 text-gray-600"}`}
       >
         {copied ? "✅ コピーしました！" : label}
@@ -470,13 +471,17 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
       <div className="flex gap-1 flex-wrap">
         {currentSections.map((s, i) => (
           <button key={i} onClick={() => setActiveTab(i)}
+            aria-label={`「${s.title}」セクションを表示する`}
+            aria-pressed={activeTab === i}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${activeTab === i ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-            <span>{s.icon}</span><span>{s.title}</span>
+            <span aria-hidden="true">{s.icon}</span><span>{s.title}</span>
           </button>
         ))}
         <button onClick={() => setShowPreview(!showPreview)}
+          aria-label={showPreview ? "ECサイト風プレビューを閉じる" : "ECサイト風プレビューを表示する"}
+          aria-expanded={showPreview}
           className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${showPreview ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-600 hover:bg-purple-200"}`}>
-          🛒 プレビュー
+          <span aria-hidden="true">🛒</span> プレビュー
         </button>
       </div>
 
@@ -496,6 +501,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
               value={editedDesc}
               onChange={e => setEditedDesc(e.target.value)}
               rows={10}
+              aria-label="商品説明文（直接編集するとCVRスコアがリアルタイムで更新されます）"
               className="w-full text-sm text-gray-800 font-sans leading-relaxed border border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y"
               placeholder="説明文を直接編集するとCVRスコアがリアルタイムで更新されます"
             />
@@ -513,7 +519,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
       </div>
       <div className="flex gap-2 justify-end flex-wrap">
         <CopyButton text={parsed.raw} label="📋 全文コピー" />
-        <button onClick={handlePrint} className="text-xs px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium">
+        <button onClick={handlePrint} aria-label="商品説明文を印刷またはPDFとして保存する" className="text-xs px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium">
           印刷・PDF保存
         </button>
         <a
@@ -603,12 +609,14 @@ function MultiPlatformPanel({ results, onClose }: { results: MultiPlatformResult
     <div className="mt-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-300 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm font-bold text-indigo-800">🔀 3プラットフォーム同時比較</p>
-        <button onClick={onClose} className="text-xs text-gray-400 hover:text-gray-600 bg-white border border-gray-200 px-2 py-0.5 rounded-full">閉じる</button>
+        <button onClick={onClose} aria-label="3プラットフォーム比較パネルを閉じる" className="text-xs text-gray-400 hover:text-gray-600 bg-white border border-gray-200 px-2 py-0.5 rounded-full">閉じる</button>
       </div>
       {/* プラットフォーム選択タブ */}
       <div className="flex gap-1 mb-3">
         {results.map((r, i) => (
           <button key={i} onClick={() => setActiveIdx(i)}
+            aria-label={`${r.platformLabel}の比較結果を表示する`}
+            aria-pressed={activeIdx === i}
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeIdx === i ? `${platformColors[r.platform] ?? "bg-blue-600"} text-white shadow` : "bg-white text-gray-600 border border-gray-200 hover:border-indigo-300"}`}>
             {r.platformLabel}
             {r.cvrScore !== null && (
@@ -645,6 +653,7 @@ function MultiPlatformPanel({ results, onClose }: { results: MultiPlatformResult
                 const desc = results[activeIdx].parsed.sections.find(s => s.title === "商品説明文")?.content ?? results[activeIdx].rawText;
                 handleCopy(desc, activeIdx);
               }}
+              aria-label={copiedIdx === activeIdx ? "コピーしました" : `${results[activeIdx]?.platformLabel ?? ""}の商品説明文をクリップボードにコピーする`}
               className={`text-xs px-3 py-1 rounded-lg font-medium transition-all ${copiedIdx === activeIdx ? "bg-green-100 text-green-700 border border-green-300" : "bg-gray-100 hover:bg-gray-200 text-gray-600"}`}
             >
               {copiedIdx === activeIdx ? "✅ コピーしました" : "コピー"}
@@ -676,6 +685,7 @@ function PaywallModal({ onClose, onStartPayjp }: { onClose: () => void; onStartP
             { name: "エンタープライズ", price: "¥9,800/月", limit: "無制限・まとめ生成（上限なし）", key: "enterprise", highlight: false },
           ].map(p => (
             <button key={p.name} onClick={() => { track('upgrade_click', { service: 'EC説明文生成AI', plan: p.key }); onStartPayjp(p.key); }}
+              aria-label={`${p.name}プラン（${p.price}、${p.limit}）を選択する`}
               className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border transition-colors text-left ${p.highlight ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700" : "bg-white text-gray-800 border-gray-200 hover:border-blue-400"}`}>
               <div>
                 <div className="font-semibold text-sm">{p.name}</div>
@@ -685,7 +695,7 @@ function PaywallModal({ onClose, onStartPayjp }: { onClose: () => void; onStartP
             </button>
           ))}
         </div>
-        <button onClick={onClose} className="w-full text-sm text-gray-400 hover:text-gray-600 py-2">閉じる</button>
+        <button onClick={onClose} aria-label="プレミアムプランのモーダルを閉じる" className="w-full text-sm text-gray-400 hover:text-gray-600 py-2">閉じる</button>
       </div>
     </div>
   );
@@ -701,7 +711,7 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold text-gray-700">商品 {index + 1} / {total}</span>
         {canRemove && (
-          <button onClick={() => onRemove(product.id)} className="text-xs text-red-400 hover:text-red-600">削除</button>
+          <button onClick={() => onRemove(product.id)} aria-label={`商品 ${index + 1} を削除する`} className="text-xs text-red-400 hover:text-red-600">削除</button>
         )}
       </div>
       {/* カテゴリプリセット */}
@@ -717,9 +727,10 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
             key={p.label}
             type="button"
             onClick={() => { onChange(product.id, "category", p.cat); onChange(product.id, "features", p.feat); }}
+            aria-label={`カテゴリ「${p.label}」のプリセットを入力欄に反映する`}
             className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full transition font-medium"
           >
-            {p.emoji} {p.label}
+            <span aria-hidden="true">{p.emoji}</span> {p.label}
           </button>
         ))}
       </div>
@@ -727,6 +738,8 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
         <label className="block text-xs font-medium text-gray-600 mb-1">商品名 <span className="text-red-500">*</span></label>
         <input type="text" value={product.productName} onChange={e => onChange(product.id, "productName", e.target.value)} required
           placeholder="例: ステンレス真空断熱ボトル 500ml"
+          aria-label={`商品 ${index + 1} の商品名（必須）`}
+          aria-required="true"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -734,12 +747,14 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
           <label className="block text-xs font-medium text-gray-600 mb-1">カテゴリ</label>
           <input type="text" value={product.category} onChange={e => onChange(product.id, "category", e.target.value)}
             placeholder="例: キッチン用品"
+            aria-label={`商品 ${index + 1} のカテゴリ`}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">価格（円）</label>
           <input type="number" value={product.price} onChange={e => onChange(product.id, "price", e.target.value)}
             placeholder="例: 2980"
+            aria-label={`商品 ${index + 1} の価格（円）`}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
       </div>
@@ -747,6 +762,8 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
         <label className="block text-xs font-medium text-gray-600 mb-1">特徴・セールスポイント <span className="text-red-500">*</span></label>
         <textarea value={product.features} onChange={e => onChange(product.id, "features", e.target.value)} rows={3} required
           placeholder={"例:\n- 24時間保温・保冷\n- 食洗機対応\n- カラー展開12色"}
+          aria-label={`商品 ${index + 1} の特徴・セールスポイント（必須）`}
+          aria-required="true"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
       </div>
     </div>
@@ -938,7 +955,7 @@ function ECToolInner() {
       {showPayjp && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl relative">
-            <button onClick={() => setShowPayjp(false)} className="absolute top-3 right-3 text-gray-400 text-xl">✕</button>
+            <button onClick={() => setShowPayjp(false)} aria-label="決済モーダルを閉じる" className="absolute top-3 right-3 text-gray-400 text-xl">✕</button>
             <div className="text-3xl mb-3 text-center">🛒</div>
             <h2 className="text-lg font-bold mb-2 text-center">プレミアムプラン</h2>
             <p className="text-sm text-gray-500 mb-4 text-center">{payjpPlan === "enterprise" ? "エンタープライズ — 無制限+API連携" : payjpPlan === "business" ? "ビジネス — 無制限+複数ショップ" : "スタンダード — 無制限利用"}</p>
@@ -970,6 +987,8 @@ function ECToolInner() {
                 { value: "bulk" as const, label: "まとめ生成", desc: "最大3商品一括" },
               ].map(m => (
                 <button key={m.value} onClick={() => { setMode(m.value); setProducts([newProduct()]); setResults([]); }}
+                  aria-label={`${m.label}モードに切り替える（${m.desc}）`}
+                  aria-pressed={mode === m.value}
                   className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${mode === m.value ? "bg-blue-600 text-white" : "text-gray-500 hover:text-gray-700"}`}>
                   {m.label}
                   <span className={`ml-1 text-xs ${mode === m.value ? "text-blue-100" : "text-gray-400"}`}>（{m.desc}）</span>
@@ -990,8 +1009,10 @@ function ECToolInner() {
                     { value: "base", label: "BASE / Shopify", icon: "🏪", hint: "ブランドストーリー・世界観・感性訴求" },
                   ] as { value: Platform; label: string; icon: string; hint: string }[]).map(p => (
                     <button key={p.value} type="button" onClick={() => setPlatform(p.value)}
+                      aria-label={`${p.label}向けに説明文を生成する（${p.hint}）`}
+                      aria-pressed={platform === p.value}
                       className={`py-2 px-3 rounded-lg border text-sm font-medium transition-colors text-left ${platform === p.value ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"}`}>
-                      <span className="mr-1">{p.icon}</span>{p.label}
+                      <span className="mr-1" aria-hidden="true">{p.icon}</span>{p.label}
                       {platform === p.value && (
                         <span className="block text-xs font-normal text-blue-100 mt-0.5">{p.hint}</span>
                       )}
@@ -1011,8 +1032,10 @@ function ECToolInner() {
                     { value: "casual" as Tone, label: "カジュアル", icon: "🎉", hint: "若者向け・SNS映え・フレンドリー" },
                   ]).map(t => (
                     <button key={t.value} type="button" onClick={() => setTone(t.value)}
+                      aria-label={`文体トーン「${t.label}」を選択する（${t.hint}）`}
+                      aria-pressed={tone === t.value}
                       className={`py-2 px-2 rounded-lg border text-xs font-medium transition-colors text-left ${tone === t.value ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-700 border-gray-300 hover:border-indigo-400"}`}>
-                      <span className="mr-1">{t.icon}</span>{t.label}
+                      <span className="mr-1" aria-hidden="true">{t.icon}</span>{t.label}
                       {tone === t.value && (
                         <span className="block text-xs font-normal text-indigo-100 mt-0.5">{t.hint}</span>
                       )}
@@ -1031,8 +1054,10 @@ function ECToolInner() {
                     { value: "natural" as KeywordStrength, label: "読みやすさ重視", icon: "📖", hint: "人間が読んで自然な流暢な文章" },
                   ]).map(k => (
                     <button key={k.value} type="button" onClick={() => setKeywordStrength(k.value)}
+                      aria-label={`SEOキーワード強度「${k.label}」を選択する（${k.hint}）`}
+                      aria-pressed={keywordStrength === k.value}
                       className={`py-2 px-2 rounded-lg border text-xs font-medium transition-colors text-left ${keywordStrength === k.value ? "bg-green-600 text-white border-green-600" : "bg-white text-gray-700 border-gray-300 hover:border-green-400"}`}>
-                      <span className="mr-1">{k.icon}</span>{k.label}
+                      <span className="mr-1" aria-hidden="true">{k.icon}</span>{k.label}
                       {keywordStrength === k.value && (
                         <span className="block text-xs font-normal text-green-100 mt-0.5">{k.hint}</span>
                       )}
@@ -1049,6 +1074,7 @@ function ECToolInner() {
 
               {mode === "bulk" && (
                 <button type="button" onClick={addProduct}
+                  aria-label="まとめ生成に商品を追加する（最大3商品、有料プランで10商品）"
                   className="w-full py-2.5 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl text-sm text-gray-500 hover:text-blue-600 font-medium transition-colors">
                   + 商品を追加（最大3商品・有料プランで10商品）
                 </button>
@@ -1057,6 +1083,8 @@ function ECToolInner() {
               {error && <p className="text-sm text-red-500">{error}</p>}
 
               <button type="submit" disabled={loading}
+                aria-label={loading ? "商品説明文を生成中です" : isLimitReached ? "有料プランに申し込む" : "商品説明文セットを生成する"}
+                aria-busy={loading}
                 className={`w-full font-bold py-3 rounded-xl text-white transition-colors ${isLimitReached ? "bg-orange-500 hover:bg-orange-600" : "bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300"}`}>
                 {loading
                   ? `生成中... ${progress.current}/${progress.total}商品`
@@ -1070,9 +1098,11 @@ function ECToolInner() {
                 type="button"
                 onClick={handleMultiGenerate}
                 disabled={multiLoading || loading}
+                aria-label={multiLoading ? "Amazon・楽天・Yahoo!の3プラットフォームで同時生成中です" : "Amazon・楽天・Yahoo!の3サイトで説明文を同時比較生成する"}
+                aria-busy={multiLoading}
                 className="w-full font-bold py-2.5 rounded-xl text-indigo-700 bg-indigo-50 border-2 border-indigo-300 hover:bg-indigo-100 disabled:opacity-50 transition-colors text-sm"
               >
-                {multiLoading ? "3プラットフォーム同時生成中..." : "🔀 Amazon・楽天・Yahoo! 3サイト同時比較"}
+                {multiLoading ? "3プラットフォーム同時生成中..." : <><span aria-hidden="true">🔀</span> Amazon・楽天・Yahoo! 3サイト同時比較</>}
               </button>
             </form>
           </div>
@@ -1084,9 +1114,11 @@ function ECToolInner() {
               {history.length > 0 && (
                 <button
                   onClick={() => setShowHistory(!showHistory)}
+                  aria-label={showHistory ? "過去の生成履歴を閉じる" : `過去の生成履歴を表示する（${history.length}件）`}
+                  aria-expanded={showHistory}
                   className="text-xs text-blue-600 border border-blue-200 rounded-full px-3 py-1 hover:bg-blue-50 transition-colors"
                 >
-                  📋 過去の履歴 ({history.length}件)
+                  <span aria-hidden="true">📋</span> 過去の履歴 ({history.length}件)
                 </button>
               )}
             </div>
@@ -1113,6 +1145,7 @@ function ECToolInner() {
                           setActiveResult(0);
                           setShowHistory(false);
                         }}
+                        aria-label={`「${h.productName || "商品名なし"}」の過去の生成結果を再表示する`}
                         className="text-xs text-blue-600 font-bold hover:text-blue-700"
                       >
                         この結果を再表示 →
@@ -1166,12 +1199,14 @@ function ECToolInner() {
                   <div className="flex gap-1 flex-wrap">
                     {results.map((r, i) => (
                       <button key={i} onClick={() => setActiveResult(i)}
+                        aria-label={`「${r.product.productName || `商品 ${i + 1}`}」の生成結果を表示する`}
+                        aria-pressed={activeResult === i}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors truncate max-w-[120px] ${activeResult === i ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
                         {r.product.productName.slice(0, 12) || `商品 ${i + 1}`}
                       </button>
                     ))}
-                    <button onClick={downloadAll} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors">
-                      ⬇ まとめてDL
+                    <button onClick={downloadAll} aria-label="全商品の説明文をまとめてテキストファイルでダウンロードする" className="px-3 py-1.5 rounded-lg text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors">
+                      <span aria-hidden="true">⬇</span> まとめてDL
                     </button>
                   </div>
                 )}
@@ -1183,9 +1218,10 @@ function ECToolInner() {
                     <button
                       onClick={handleRegenerate}
                       disabled={loading}
+                      aria-label="別のパターンで商品説明文を再生成する"
                       className="mt-2 text-sm text-gray-500 underline hover:text-gray-700 disabled:opacity-40"
                     >
-                      🔄 別のパターンで再生成
+                      <span aria-hidden="true">🔄</span> 別のパターンで再生成
                     </button>
                   </>
                 ) : null}
