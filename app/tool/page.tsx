@@ -491,7 +491,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
         <ECPreview parsed={{ ...parsed, sections: currentSections }} productName={productName} platform={platform} />
       )}
 
-      <div className="bg-white border border-gray-200 rounded-xl p-4 min-h-[280px]">
+      <div className="backdrop-blur-sm bg-white/90 border border-white/30 shadow-lg rounded-2xl p-4 min-h-[280px]">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-semibold text-gray-700">{section.icon} {section.title}</span>
           <CopyButton text={section.content} />
@@ -627,7 +627,7 @@ function MultiPlatformPanel({ results, onClose }: { results: MultiPlatformResult
         ))}
       </div>
       {/* CVR比較バー */}
-      <div className="bg-white border border-gray-200 rounded-xl p-3 mb-3">
+      <div className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-md rounded-xl p-3 mb-3">
         <p className="text-xs font-bold text-gray-600 mb-2">CVR予測スコア比較</p>
         {results.map((r, i) => (
           <div key={i} className="mb-1.5">
@@ -708,7 +708,7 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
   onRemove: (id: number) => void; canRemove: boolean;
 }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+    <div className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-lg rounded-2xl p-4 space-y-3">
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold text-gray-700">商品 {index + 1} / {total}</span>
         {canRemove && (
@@ -1033,7 +1033,7 @@ function ECToolInner() {
           {/* 左：入力エリア */}
           <div className="space-y-4">
             {/* モード切替 */}
-            <div className="bg-white border border-gray-200 rounded-xl p-1 flex">
+            <div className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-lg rounded-xl p-1 flex">
               {[
                 { value: "single" as const, label: "単品生成", desc: "1商品ずつ" },
                 { value: "bulk" as const, label: "まとめ生成", desc: "最大3商品一括" },
@@ -1230,7 +1230,7 @@ function ECToolInner() {
             )}
 
             {loading ? (
-              <div className="bg-white border border-gray-200 rounded-xl min-h-[420px] flex flex-col">
+              <div className="backdrop-blur-sm bg-white/90 border border-white/30 shadow-lg rounded-2xl min-h-[420px] flex flex-col">
                 <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 flex-shrink-0" aria-hidden="true" />
                   <div className="flex-1 min-w-0">
