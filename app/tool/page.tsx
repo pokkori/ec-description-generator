@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import KomojuButton from "@/components/KomojuButton";
 import { track } from '@vercel/analytics';
+import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
@@ -792,11 +793,14 @@ function ECToolInner() {
   const [multiResults, setMultiResults] = useState<MultiPlatformResult[]>([]);
   const [multiLoading, setMultiLoading] = useState(false);
   const [showMultiCompare, setShowMultiCompare] = useState(false);
+  const [streak, setStreak] = useState<StreakData | null>(null);
+  const [streakMsg, setStreakMsg] = useState<string | null>(null);
   const searchParams = useSearchParams();
 
   useEffect(() => {
     setUsageCount(parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10));
     setHistory(loadHistory());
+    setStreak(loadStreak("ec_setsumei"));
     // LPの料金プランボタンから直接決済フローに入る
     const plan = searchParams.get("plan");
     if (plan === "standard" || plan === "business" || plan === "enterprise") {
@@ -936,6 +940,7 @@ function ECToolInner() {
     if (newResults.length > 0 && newResults[0].parsed) {
       saveHistory(newResults[0].product.productName, platform, tone, newResults[0].parsed.raw);
       setHistory(loadHistory());
+      const s = updateStreak("ec_setsumei"); setStreak(s); const msg = getStreakMilestoneMessage(s.count); if (msg) setStreakMsg(msg);
     }
     if (currentCount >= FREE_LIMIT) setTimeout(() => setShowPaywall(true), 1500);
   };
@@ -1011,7 +1016,11 @@ function ECToolInner() {
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">AI商品説明文ジェネレーター</h1>
-            <p className="text-sm text-gray-500">楽天・Amazon・Yahoo!・メルカリ対応｜まとめ生成で作業効率10倍</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-sm text-gray-500">楽天・Amazon・Yahoo!・メルカリ対応｜まとめ生成で作業効率10倍</p>
+              {streak && streak.count > 0 && <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-3 py-1 text-sm"><span>{streak.count}日連続利用中</span></div>}
+            </div>
+            {streakMsg && <div className="text-orange-600 font-bold text-sm">{streakMsg}</div>}
           </div>
           <span className={`text-xs px-3 py-1 rounded-full font-medium ${isLimitReached ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>
             {isLimitReached ? "無料枠終了" : `無料あと${remaining}回`}
