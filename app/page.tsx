@@ -76,7 +76,7 @@ function InteractiveDemo() {
         </div>
 
         {activeDemo && (
-          <div className="bg-white rounded-2xl border-2 border-blue-200 shadow-lg p-5">
+          <div className="backdrop-blur-sm bg-white rounded-2xl border-2 border-blue-200 shadow-lg p-5">
             {/* Before */}
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-2">
@@ -320,7 +320,7 @@ export default function LandingPage() {
                 body: "品質にバラつきがある、修正依頼が面倒、締め切りが守られない。外注コストが積み重なって、利益を圧迫していませんか？",
               },
             ].map((item) => (
-              <div key={item.scene} className="flex gap-4 bg-gray-50 rounded-2xl p-5 border border-gray-100">
+              <div key={item.scene} className="flex gap-4 backdrop-blur-sm bg-gray-50 rounded-2xl p-5 border border-gray-100">
                 <span className="text-3xl shrink-0">{item.emoji}</span>
                 <div>
                   <p className="font-bold text-gray-800 text-sm mb-1">{item.scene}</p>
@@ -347,7 +347,7 @@ export default function LandingPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
             {PROBLEMS.map((p) => (
-              <div key={p.text} className="flex items-start gap-3 bg-white rounded-xl p-4 border border-gray-200">
+              <div key={p.text} className="flex items-start gap-3 backdrop-blur-sm bg-white rounded-xl p-4 border border-gray-200">
                 <span className="text-2xl">{p.emoji}</span>
                 <p className="text-sm text-gray-700 leading-relaxed">{p.text}</p>
               </div>
@@ -497,7 +497,7 @@ export default function LandingPage() {
               { law: "薬機法", examples: ["治る", "効く", "改善する", "医師も推薦"], risk: "2年以下の懲役または200万円以下の罰金" },
               { law: "各モール規約", examples: ["最安値保証", "他社比較", "無条件返金", "永久保証"], risk: "出品停止・アカウント凍結" },
             ].map((item) => (
-              <div key={item.law} className="bg-white rounded-xl p-4 border border-amber-200 shadow-sm">
+              <div key={item.law} className="backdrop-blur-sm bg-white rounded-xl p-4 border border-amber-200 shadow-sm">
                 <h3 className="font-bold text-amber-800 text-sm mb-2">❌ {item.law}</h3>
                 <div className="flex flex-wrap gap-1 mb-3">
                   {item.examples.map(ex => (
@@ -523,7 +523,7 @@ export default function LandingPage() {
           <p className="text-center text-gray-500 text-sm mb-8">同じ商品でも、説明文ひとつで売上が変わります</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-0 items-stretch">
             {/* Before */}
-            <div className="bg-white rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none p-6 border-2 border-red-200">
+            <div className="backdrop-blur-sm bg-white rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none p-6 border-2 border-red-200">
               <div className="flex items-center gap-2 mb-3">
                 <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">BEFORE</span>
                 <span className="text-sm text-gray-500">手書きの説明文</span>
