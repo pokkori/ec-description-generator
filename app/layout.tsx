@@ -27,6 +27,18 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 };
 
+const APP_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AI商品説明文ジェネレーター",
+  "description": DESC,
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "url": SITE_URL,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY", "description": "無料3回・スタンダード¥980/月" },
+  "inLanguage": "ja",
+};
+
 const FAQ_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -78,6 +90,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ja">
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(APP_JSON_LD) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
