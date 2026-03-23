@@ -971,17 +971,16 @@ export default function LandingPage() {
 
       {/* X Share */}
       <section className="py-8 px-6 max-w-3xl mx-auto text-center">
+        <p className="text-gray-400 text-sm mb-4">EC商品説明文を4プラットフォーム分一括生成！ネットショップ出品者の方にシェアしませんか？</p>
         <a
-          href={"https://twitter.com/intent/tweet?text=" + encodeURIComponent("EC説明文生成AI — 商品名・特徴を入力するだけでAIがEC向け販売説明文を自動生成📦 ネットショップ出品者に超便利！ → https://ec-description-generator.vercel.app #EC説明文 #ネットショップ #AI")}
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("AIがEC商品説明文を4プラットフォーム分一括生成！無料3回 #EC #楽天 #Amazon")}&url=${encodeURIComponent("https://ec-description-generator.vercel.app")}`}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="EC説明文生成AIをXでシェアする"
-          className="inline-flex items-center gap-2 bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-xl text-sm transition-colors"
+          aria-label="XでシェアするXでシェアする"
+          className="inline-flex items-center gap-2 bg-black text-white px-5 py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors min-h-[44px]"
         >
-          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-          Xでシェアする
+          <span>𝕏</span>
+          <span>Xでシェアする</span>
         </a>
       </section>
 
