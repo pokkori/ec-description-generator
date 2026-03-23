@@ -64,7 +64,10 @@ function InteractiveDemo() {
           {Object.keys(DEMO_TEMPLATES).map((name) => (
             <button
               key={name}
+              type="button"
               onClick={() => selectTemplate(name)}
+              aria-label={`デモ商品「${name}」を選択する`}
+              aria-pressed={productName === name}
               className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${productName === name ? "bg-blue-600 text-white shadow-md" : "bg-white text-gray-700 border border-gray-200 hover:border-blue-400"}`}
             >
               {name}
@@ -89,8 +92,11 @@ function InteractiveDemo() {
             {!showAfter && (
               <div className="text-center mb-4">
                 <button
+                  type="button"
                   onClick={handleGenerate}
                   disabled={isAnimating}
+                  aria-label="AIで商品説明文を生成する"
+                  aria-busy={isAnimating}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl transition-all disabled:opacity-60 shadow-md shadow-blue-200"
                 >
                   {isAnimating ? (
@@ -116,7 +122,9 @@ function InteractiveDemo() {
                 </div>
                 <div className="flex gap-2">
                   <button
+                    type="button"
                     onClick={() => { navigator.clipboard.writeText(activeDemo.after); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                    aria-label="生成されたAI説明文をクリップボードにコピーする"
                     className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors"
                   >
                     {copied ? "✓ コピー完了！" : "📋 コピーする"}
@@ -125,7 +133,7 @@ function InteractiveDemo() {
                     自分の商品で試す →
                   </Link>
                 </div>
-                <button onClick={() => setShowAfter(false)} className="w-full text-xs text-gray-400 hover:text-gray-600 mt-2 text-center">もう一度生成する</button>
+                <button type="button" onClick={() => setShowAfter(false)} aria-label="もう一度AIで説明文を生成する" className="w-full text-xs text-gray-400 hover:text-gray-600 mt-2 text-center">もう一度生成する</button>
               </div>
             )}
           </div>
@@ -226,11 +234,12 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* ナビ */}
-      <nav className="border-b border-gray-100 px-6 py-4 sticky top-0 bg-white/95 backdrop-blur z-10">
+      <nav aria-label="メインナビゲーション" className="border-b border-gray-100 px-6 py-4 sticky top-0 bg-white/95 backdrop-blur z-10">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <span className="font-bold text-gray-900">AI商品説明文ジェネレーター</span>
           <Link
             href="/tool"
+            aria-label="AI商品説明文ジェネレーターで無料で説明文を生成する"
             className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             無料で説明文を生成する
@@ -966,6 +975,7 @@ export default function LandingPage() {
           href={"https://twitter.com/intent/tweet?text=" + encodeURIComponent("EC説明文生成AI — 商品名・特徴を入力するだけでAIがEC向け販売説明文を自動生成📦 ネットショップ出品者に超便利！ → https://ec-description-generator.vercel.app #EC説明文 #ネットショップ #AI")}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="EC説明文生成AIをXでシェアする"
           className="inline-flex items-center gap-2 bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-xl text-sm transition-colors"
         >
           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">

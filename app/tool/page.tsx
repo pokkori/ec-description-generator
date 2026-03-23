@@ -290,7 +290,7 @@ function ECPreview({ parsed, productName, platform }: { parsed: ParsedResult; pr
           <p className="text-xs text-gray-600 leading-relaxed line-clamp-4 whitespace-pre-wrap">{descText.slice(0, 200)}{descText.length > 200 ? "..." : ""}</p>
           <div className="mt-3 flex items-center justify-between">
             <span className="text-xs text-gray-400">商品説明・SEOキーワード含む</span>
-            <button className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold">カートに入れる</button>
+            <button type="button" aria-label="カートに入れる（プレビュー表示）" className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold">カートに入れる</button>
           </div>
         </div>
       </div>
@@ -779,6 +779,7 @@ function ECToolInner() {
   const [results, setResults] = useState<ProductResult[]>([]);
   const [activeResult, setActiveResult] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState("");
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [usageCount, setUsageCount] = useState(0);
   const [ngWords, setNgWords] = useState<string[]>([]);
@@ -835,6 +836,7 @@ function ECToolInner() {
       if (chunk.includes("\nDONE:")) {
         const idx = chunk.indexOf("\nDONE:");
         accumulated += chunk.slice(0, idx);
+        setStreamingText(accumulated);
         try {
           const meta = JSON.parse(chunk.slice(idx + 6));
           newCount = meta.count ?? newCount;
@@ -842,8 +844,10 @@ function ECToolInner() {
         } catch { /* ignore */ }
       } else {
         accumulated += chunk;
+        setStreamingText(accumulated);
       }
     }
+    setStreamingText("");
     return { result: parseResult(accumulated), newCount, ngWordsFound, rawText: accumulated };
   };
 
@@ -907,7 +911,7 @@ function ECToolInner() {
     const validProducts = products.filter(p => p.productName && p.features);
     if (validProducts.length > 0) track('ai_generated', { service: 'EC説明文生成AI' });
     if (validProducts.length === 0) { setError("商品名と特徴を入力してください"); return; }
-    setLoading(true); setResults([]); setError(""); setProgress({ current: 0, total: validProducts.length });
+    setLoading(true); setResults([]); setError(""); setStreamingText(""); setProgress({ current: 0, total: validProducts.length });
 
     let currentCount = usageCount;
     const newResults: ProductResult[] = [];
@@ -1178,19 +1182,29 @@ function ECToolInner() {
             )}
 
             {loading ? (
-              <div className="bg-white border border-gray-200 rounded-xl flex items-center justify-center min-h-[420px]">
-                <div className="text-center px-8">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto mb-4" />
-                  <p className="text-sm text-gray-700 font-semibold">
-                    {progress.total > 1 ? `商品 ${progress.current} / ${progress.total} を生成中...` : "AIが説明文を生成中..."}
-                  </p>
-                  {progress.total > 1 && (
-                    <div className="mt-3 bg-gray-100 rounded-full h-2 w-48 mx-auto">
-                      <div className="bg-blue-600 h-2 rounded-full transition-all" style={{ width: `${(progress.current / progress.total) * 100}%` }} />
-                    </div>
-                  )}
-                  <p className="text-xs text-gray-400 mt-3">📌 タイトル案 → ✨ キャッチコピー → 📝 説明文 → 🔍 SEOキーワード</p>
+              <div className="bg-white border border-gray-200 rounded-xl min-h-[420px] flex flex-col">
+                <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 flex-shrink-0" aria-hidden="true" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-blue-700 font-semibold" aria-live="polite" aria-atomic="true">
+                      {progress.total > 1 ? `商品 ${progress.current} / ${progress.total} を生成中...` : "AIが説明文を生成中..."}
+                    </p>
+                    {progress.total > 1 && (
+                      <div className="mt-1 bg-gray-100 rounded-full h-1.5 w-full">
+                        <div className="bg-blue-600 h-1.5 rounded-full transition-all" style={{ width: `${(progress.current / progress.total) * 100}%` }} />
+                      </div>
+                    )}
+                  </div>
                 </div>
+                {streamingText ? (
+                  <div className="flex-1 p-4 overflow-y-auto">
+                    <pre className="text-xs text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">{streamingText.slice(-800)}</pre>
+                  </div>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center">
+                    <p className="text-xs text-gray-400">タイトル案 → キャッチコピー → 説明文 → SEOキーワード</p>
+                  </div>
+                )}
               </div>
             ) : results.length > 0 ? (
               <div className="space-y-3">
