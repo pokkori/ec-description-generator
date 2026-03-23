@@ -109,7 +109,7 @@ function CVRScorePanel({ text, platform }: { text: string; platform: string }) {
   const hints = breakdown.filter(b => b.score < b.maxScore);
 
   return (
-    <div className={`border-2 rounded-xl p-4 mb-4 ${bgClass}`}>
+    <div className={`border-2 rounded-xl p-4 mb-4 backdrop-blur-sm ${bgClass}`}>
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-bold text-gray-700">🎯 CVR予測スコア（リアルタイム採点）</span>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${badgeClass}`}>{badge}</span>
@@ -330,7 +330,7 @@ function QualityScoreCard({ text }: { text: string }) {
   const badge = total >= 80 ? "優秀！" : total >= 60 ? "良好" : "改善余地あり";
   const badgeColor = total >= 80 ? "bg-green-100 text-green-700" : total >= 60 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700";
   return (
-    <div className={`border-2 rounded-xl p-4 mb-4 ${bg}`}>
+    <div className={`border-2 rounded-xl p-4 mb-4 backdrop-blur-sm ${bg}`}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-bold text-gray-700">📊 説明文品質スコア</span>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>{badge}</span>
@@ -361,7 +361,7 @@ function CvrScoreCard({ score }: { score: number }) {
   const barColor = score >= 75 ? "bg-green-500" : score >= 60 ? "bg-amber-500" : "bg-red-500";
   const label = score >= 75 ? "高CVR見込み" : score >= 60 ? "平均的" : "改善の余地あり";
   return (
-    <div className={`border-2 rounded-xl p-4 mb-4 ${bg}`}>
+    <div className={`border-2 rounded-xl p-4 mb-4 backdrop-blur-sm ${bg}`}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-bold text-gray-700">🎯 CVR予測スコア（購買転換率）</span>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${score >= 75 ? "bg-green-100 text-green-700" : score >= 60 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{label}</span>
@@ -459,10 +459,19 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
       {/* 達成感演出バナー */}
       <div className="animate-bounce bg-green-50 border-2 border-green-400 rounded-xl px-4 py-3 flex items-center gap-3">
         <span className="text-2xl">✅</span>
-        <div>
+        <div className="flex-1">
           <p className="text-sm font-bold text-green-800">説明文が完成しました！</p>
           <p className="text-xs text-green-600">タイトル案・キャッチコピー・説明文・SEOキーワード・Q&A・ポジショニング</p>
         </div>
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="AIで作成した商品説明文の完成をXでシェアする（新しいタブで開きます）"
+          className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-sky-500 text-white hover:bg-sky-600 font-medium transition-colors min-h-[44px] inline-flex items-center"
+        >
+          𝕏 シェア
+        </a>
       </div>
       {cvrScore !== null && <CvrScoreCard score={cvrScore} />}
       {/* リアルタイムCVRスコアパネル（商品説明文テキスト連動） */}
@@ -527,6 +536,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
           href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="生成した商品説明文の結果をXにシェアする（新しいタブで開きます）"
           className="text-xs px-3 py-1 rounded-lg bg-sky-500 text-white hover:bg-sky-600 font-medium transition-colors"
         >
           𝕏 AIが作った説明文をシェア

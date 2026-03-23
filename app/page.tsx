@@ -365,7 +365,7 @@ export default function LandingPage() {
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">4つの特徴</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURES.map((f) => (
-              <div key={f.title} className="text-center p-6 bg-gray-50 rounded-2xl">
+              <div key={f.title} className="text-center p-6 bg-gray-50 backdrop-blur-sm rounded-2xl border border-gray-100">
                 <div className="text-4xl mb-4">{f.icon}</div>
                 <h3 className="font-bold text-gray-900 mb-2">{f.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
@@ -391,7 +391,7 @@ export default function LandingPage() {
           </div>
           <div className="grid md:grid-cols-2 gap-8 items-start">
             {/* モックアップ */}
-            <div className="bg-white rounded-2xl border-2 border-blue-200 shadow-lg p-5">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl border-2 border-blue-200 shadow-lg p-5">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-bold text-gray-700">🎯 CVR予測スコア（リアルタイム採点）</span>
                 <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">高CVR見込み</span>
@@ -561,7 +561,7 @@ export default function LandingPage() {
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">導入した方の声</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {VOICES.map(v => (
-              <div key={v.role} className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+              <div key={v.role} className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-gray-100 shadow-sm">
                 <p className="text-sm text-gray-600 leading-relaxed mb-3">&ldquo;{v.text}&rdquo;</p>
                 <p className="text-xs text-gray-400 font-medium">{v.role}</p>
               </div>
@@ -580,7 +580,7 @@ export default function LandingPage() {
             {PLANS.map((plan) => (
               <div
                 key={plan.name}
-                className={`rounded-2xl border p-6 relative bg-white ${
+                className={`rounded-2xl border p-6 relative bg-white/90 backdrop-blur-sm ${
                   plan.highlight
                     ? "border-blue-500 shadow-lg shadow-blue-100"
                     : "border-gray-200"
@@ -976,7 +976,7 @@ export default function LandingPage() {
           href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("AIがEC商品説明文を4プラットフォーム分一括生成！無料3回 #EC #楽天 #Amazon")}&url=${encodeURIComponent("https://ec-description-generator.vercel.app")}`}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="XでシェアするXでシェアする"
+          aria-label="EC商品説明文ジェネレーターをXでシェアする（新しいタブで開きます）"
           className="inline-flex items-center gap-2 bg-black text-white px-5 py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors min-h-[44px]"
         >
           <span>𝕏</span>
@@ -996,13 +996,13 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto px-6 space-y-3">
           <p className="font-medium text-gray-500">AI商品説明文ジェネレーター</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/blog" className="hover:text-gray-600 font-medium">ECコラム</Link>
-            <Link href="/blog/rakuten-description" className="hover:text-gray-600">楽天商品説明文の書き方</Link>
-            <Link href="/blog/amazon-description" className="hover:text-gray-600">Amazon商品説明文のコツ</Link>
-            <Link href="/blog/ec-description-template" className="hover:text-gray-600">商品説明文テンプレート</Link>
-            <Link href="/legal" className="hover:text-gray-600">特定商取引法</Link>
-            <Link href="/terms" className="hover:text-gray-600">利用規約</Link>
-            <Link href="/privacy" className="hover:text-gray-600">プライバシーポリシー</Link>
+            <Link href="/blog" className="hover:text-gray-600 font-medium" aria-label="ECコラム記事一覧を見る">ECコラム</Link>
+            <Link href="/blog/rakuten-description" className="hover:text-gray-600" aria-label="楽天商品説明文の書き方を読む">楽天商品説明文の書き方</Link>
+            <Link href="/blog/amazon-description" className="hover:text-gray-600" aria-label="Amazon商品説明文のコツを読む">Amazon商品説明文のコツ</Link>
+            <Link href="/blog/ec-description-template" className="hover:text-gray-600" aria-label="商品説明文テンプレートを見る">商品説明文テンプレート</Link>
+            <Link href="/legal" className="hover:text-gray-600" aria-label="特定商取引法に基づく表示を見る">特定商取引法</Link>
+            <Link href="/terms" className="hover:text-gray-600" aria-label="利用規約を読む">利用規約</Link>
+            <Link href="/privacy" className="hover:text-gray-600" aria-label="プライバシーポリシーを読む">プライバシーポリシー</Link>
           </div>
         </div>
       </footer>
