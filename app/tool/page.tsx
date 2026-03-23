@@ -574,6 +574,17 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
         </a>
         <p className="text-xs text-slate-400 text-center mt-2">※ 広告・PR（BASE公式サイトに遷移します）</p>
       </div>
+      {/* プレミアムプラン CTA */}
+      <div className="mt-4 backdrop-blur-sm bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl p-4">
+        <p className="text-sm font-bold text-blue-800 mb-1">月500件以上の説明文を生成したいなら</p>
+        <p className="text-xs text-blue-600 mb-3">プレミアムプランで無制限生成・5商品まとめ生成・CSV出力が使い放題</p>
+        <KomojuButton
+          planId="standard"
+          planLabel="スタンダードプラン ¥980/月で始める"
+          className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700 disabled:opacity-50 text-sm"
+          aria-label="スタンダードプランに申し込んで無制限で説明文を生成する"
+        />
+      </div>
       </div>
     </div>
   );
@@ -705,6 +716,20 @@ function PaywallModal({ onClose, onStartPayjp }: { onClose: () => void; onStartP
               <div className="font-bold text-sm shrink-0 ml-2">{p.price}</div>
             </button>
           ))}
+        </div>
+        <div className="space-y-2 mb-3">
+          <KomojuButton
+            planId="standard"
+            planLabel="スタンダードプラン ¥980/月"
+            className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 text-sm"
+            aria-label="スタンダードプランに申し込む（¥980/月・50件/月）"
+          />
+          <KomojuButton
+            planId="business"
+            planLabel="ビジネスプラン ¥4,980/月"
+            className="w-full bg-indigo-700 text-white font-bold py-2.5 rounded-xl hover:bg-indigo-800 disabled:opacity-50 text-sm"
+            aria-label="ビジネスプランに申し込む（¥4,980/月・500件/月）"
+          />
         </div>
         <button onClick={onClose} aria-label="プレミアムプランのモーダルを閉じる" className="w-full text-sm text-gray-400 hover:text-gray-600 py-2">閉じる</button>
       </div>
@@ -1032,9 +1057,18 @@ function ECToolInner() {
             </div>
             {streakMsg && <div className="text-orange-600 font-bold text-sm">{streakMsg}</div>}
           </div>
-          <span className={`text-xs px-3 py-1 rounded-full font-medium ${isLimitReached ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>
-            {isLimitReached ? "無料枠終了" : `無料あと${remaining}回`}
-          </span>
+          {isLimitReached ? (
+            <KomojuButton
+              planId="standard"
+              planLabel="今すぐアップグレード"
+              className="text-xs px-3 py-1.5 rounded-full font-bold bg-orange-500 text-white hover:bg-orange-600 disabled:opacity-50 min-h-[36px]"
+              aria-label="スタンダードプランにアップグレードして無制限で利用する"
+            />
+          ) : (
+            <span className="text-xs px-3 py-1 rounded-full font-medium bg-blue-100 text-blue-700">
+              無料あと{remaining}回
+            </span>
+          )}
         </div>
       </header>
 
@@ -1155,6 +1189,15 @@ function ECToolInner() {
                   ? `${products.filter(p => p.productName && p.features).length}商品をまとめ生成する`
                   : "商品説明文セットを生成する（無料）"}
               </button>
+              {/* 無料枠終了時のインライン決済CTA */}
+              {isLimitReached && (
+                <KomojuButton
+                  planId="standard"
+                  planLabel="スタンダードプランで続ける ¥980/月"
+                  className="w-full bg-orange-500 text-white font-bold py-3 rounded-xl hover:bg-orange-600 disabled:opacity-50 text-sm"
+                  aria-label="スタンダードプランに申し込んで無制限で商品説明文を生成する"
+                />
+              )}
               {/* 3プラットフォーム同時比較ボタン */}
               <button
                 type="button"
@@ -1290,14 +1333,27 @@ function ECToolInner() {
                 ) : results[activeResult]?.parsed ? (
                   <>
                     <ResultTabs parsed={results[activeResult].parsed} productName={results[activeResult].product.productName} platform={platform} rawText={results[activeResult].rawText} tone={tone} />
-                    <button
-                      onClick={handleRegenerate}
-                      disabled={loading}
-                      aria-label="別のパターンで商品説明文を再生成する"
-                      className="mt-2 text-sm text-gray-500 underline hover:text-gray-700 disabled:opacity-40"
-                    >
-                      <span aria-hidden="true">🔄</span> 別のパターンで再生成
-                    </button>
+                    <div className="mt-2 flex flex-col gap-2">
+                      <button
+                        onClick={handleRegenerate}
+                        disabled={loading}
+                        aria-label="別のパターンで商品説明文を再生成する"
+                        className="text-sm text-gray-500 underline hover:text-gray-700 disabled:opacity-40"
+                      >
+                        <span aria-hidden="true">🔄</span> 別のパターンで再生成
+                      </button>
+                      {isLimitReached && (
+                        <div className="backdrop-blur-sm bg-white/90 border border-blue-200 rounded-xl p-3">
+                          <p className="text-xs text-gray-600 mb-2 font-medium">無料枠を使い切りました。続けて生成するにはプレミアムプランへ。</p>
+                          <KomojuButton
+                            planId="standard"
+                            planLabel="スタンダードプラン ¥980/月"
+                            className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700 disabled:opacity-50 text-sm"
+                            aria-label="スタンダードプランに申し込んでさらに説明文を生成する"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </>
                 ) : null}
               </div>
@@ -1322,13 +1378,53 @@ function ECToolInner() {
                     <p>複数商品を一括処理。結果はタブで切り替え・全文ダウンロード可能。</p>
                   </div>
                 )}
+                <div className="w-full max-w-[260px]">
+                  <KomojuButton
+                    planId="standard"
+                    planLabel="プレミアムプランを見る"
+                    className="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700 disabled:opacity-50 text-xs"
+                    aria-label="プレミアムプランの詳細を見る（スタンダード¥980/月）"
+                  />
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      <footer className="text-center py-6 text-xs text-gray-400 border-t mt-8">
+      {/* フッター上 アップグレードCTAバナー */}
+      <section className="max-w-5xl mx-auto px-6 py-6">
+        <div className="backdrop-blur-sm bg-gradient-to-r from-indigo-600 to-blue-600 rounded-2xl p-6 text-white">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-lg font-bold mb-1">プレミアムプランで作業効率10倍</p>
+              <p className="text-sm text-blue-100">月500件・5商品まとめ生成・CSV出力・全プラットフォーム対応</p>
+            </div>
+            <div className="flex flex-col gap-2 w-full md:w-auto">
+              <KomojuButton
+                planId="standard"
+                planLabel="スタンダード ¥980/月"
+                className="px-6 py-3 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 disabled:opacity-50 text-sm min-w-[200px]"
+                aria-label="スタンダードプランに申し込む（¥980/月）"
+              />
+              <KomojuButton
+                planId="business"
+                planLabel="ビジネス ¥4,980/月"
+                className="px-6 py-3 bg-blue-800 text-white font-bold rounded-xl hover:bg-blue-900 disabled:opacity-50 text-sm min-w-[200px] border border-blue-400"
+                aria-label="ビジネスプランに申し込む（¥4,980/月・500件/月）"
+              />
+              <KomojuButton
+                planId="enterprise"
+                planLabel="エンタープライズ ¥9,800/月"
+                className="px-6 py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 disabled:opacity-50 text-sm min-w-[200px] border border-gray-600"
+                aria-label="エンタープライズプランに申し込む（¥9,800/月・無制限）"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="text-center py-6 text-xs text-gray-400 border-t mt-4">
         <a href="/legal" className="hover:underline">特定商取引法に基づく表記</a>
         <span className="mx-2">|</span>
         <a href="/privacy" className="hover:underline">プライバシーポリシー</a>
