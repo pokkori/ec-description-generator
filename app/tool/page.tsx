@@ -948,6 +948,45 @@ function ECToolInner() {
     URL.revokeObjectURL(url);
   };
 
+  const downloadCSV = () => {
+    const rows: string[][] = [
+      ["商品名", "プラットフォーム", "トーン", "説明文", "CVRスコア", "文字数", "生成日時"],
+    ];
+    const platformLabel: Record<string, string> = {
+      rakuten: "楽天市場", amazon: "Amazon", yahoo: "Yahoo!ショッピング",
+      mercari: "メルカリ", base: "BASE",
+    };
+    const toneLabel: Record<string, string> = {
+      professional: "プロフェッショナル", friendly: "フレンドリー",
+      luxury: "高級感", casual: "カジュアル",
+    };
+    const now = new Date().toLocaleString("ja-JP");
+    for (const r of results) {
+      if (!r.parsed) continue;
+      const descSection = r.parsed.sections.find(s => s.title === "商品説明文");
+      const descText = descSection ? descSection.content : r.parsed.raw;
+      const cvrScore = calculateCVRScore(descText, platform).score;
+      rows.push([
+        r.product.productName,
+        platformLabel[platform] ?? platform,
+        toneLabel[tone] ?? tone,
+        descText,
+        String(cvrScore),
+        String(descText.length),
+        now,
+      ]);
+    }
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ec_descriptions_${new Date().toLocaleDateString("ja-JP").replace(/\//g, "-")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleRegenerate = () => {
     const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
     handleSubmit(fakeEvent);
@@ -1221,6 +1260,9 @@ function ECToolInner() {
                     ))}
                     <button onClick={downloadAll} aria-label="全商品の説明文をまとめてテキストファイルでダウンロードする" className="px-3 py-1.5 rounded-lg text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors">
                       <span aria-hidden="true">⬇</span> まとめてDL
+                    </button>
+                    <button onClick={downloadCSV} aria-label="説明文をCSV形式でダウンロードする" className="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
+                      <span aria-hidden="true">⬇</span> CSV出力
                     </button>
                   </div>
                 )}
