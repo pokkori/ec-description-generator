@@ -6,6 +6,7 @@ import { AdBanner } from "@/components/AdBanner";
 import { StreakBanner } from "@/components/StreakBanner";
 import { UsageCounter } from "@/components/UsageCounter";
 import { CrossSell } from "@/components/CrossSell";
+import { TrustBadge } from "@/components/TrustBadge";
 
 /* ---- SVG Icon helper (replaces all emoji) ---- */
 const IC: Record<string, React.ReactNode> = {
@@ -375,6 +376,7 @@ export default function LandingPage() {
  <span>クレカ不要</span>
  </div>
  <div className="max-w-xs mx-auto mb-4"><UsageCounter /></div>
+ <TrustBadge />
  <Link
  href="/tool"
  aria-label="AI商品説明文ジェネレーターで無料3回、登録不要で今すぐ説明文を生成する"
