@@ -1,12 +1,22 @@
 # AI商品説明文ジェネレーター
-楽天・Amazon・Yahoo!・メルカリ向けSEO最適化商品説明文を一括生成するEC事業者向けツール
 
-## サービス概要
-- 対象ユーザー: 楽天・Amazon・Yahoo!ショッピング・メルカリなどで販売するEC事業者
-- 主な機能: 商品名と特徴を入力するだけで4プラットフォーム対応の説明文を一括生成、SEO最適化済み、10商品を約50分で完成
-- 料金: 無料3回・スタンダード¥980/月
-- URL: https://ec-description-generator.vercel.app
+> 楽天・Amazon・Yahoo!・メルカリ対応のSEO最適化商品説明文を一括生成するECツール
 
-## 主要FAQ
-Q: AI商品説明文ジェネレーターで作成した文章は商用利用できますか？
-A: はい、生成された説明文はご利用者様に帰属し、楽天・Amazon等のECサイトへの掲載を含む商用利用を自由に行えます。著作権の問題なくそのまま商品ページへ掲載いただけます。無料で3回お試しいただけます。
+## About
+商品名と特徴を入力するだけで、楽天・Amazon・Yahoo!ショッピング・メルカリの4プラットフォーム対応のSEO最適化商品説明文を一括生成します。10商品を50分で完成でき、ECショップ運営者の商品ページ作成を大幅に効率化します。
+
+## Features
+- 4プラットフォーム同時生成: 楽天・Amazon・Yahoo!・メルカリ向けの説明文を一括作成
+- SEO最適化: 各モールの検索アルゴリズムに最適化されたキーワード配置
+- テンプレート対応: 商品カテゴリ別の最適な構成で自動生成
+- コピー&ペースト対応: 生成文をそのまま出品ページに貼り付け可能
+
+## Pricing
+- 無料プラン: 3回まで無料（登録不要）
+- スタンダード: ¥980/月
+
+## Links
+- [ホーム](https://ec-description-generator.vercel.app)
+- [ツール](https://ec-description-generator.vercel.app/tool)
+- [利用規約](https://ec-description-generator.vercel.app/legal)
+- [プライバシーポリシー](https://ec-description-generator.vercel.app/privacy)
