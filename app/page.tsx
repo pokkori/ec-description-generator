@@ -5,6 +5,7 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { AdBanner } from "@/components/AdBanner";
 import { StreakBanner } from "@/components/StreakBanner";
 import { UsageCounter } from "@/components/UsageCounter";
+import { CrossSell } from "@/components/CrossSell";
 
 /* ---- SVG Icon helper (replaces all emoji) ---- */
 const IC: Record<string, React.ReactNode> = {
@@ -379,8 +380,9 @@ export default function LandingPage() {
  aria-label="AI商品説明文ジェネレーターで無料3回、登録不要で今すぐ説明文を生成する"
  className="inline-block bg-blue-600 text-white text-base font-bold px-8 py-4 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
  >
- 無料で説明文を生成する →
+ 売れる説明文を無料で生成 →
  </Link>
+ <p className="text-xs opacity-60 mt-2">※プロ品質・30秒で完成</p>
  </section>
 
  {/* LP内インタラクティブデモ */}
@@ -1096,6 +1098,8 @@ export default function LandingPage() {
  </div>
 
  {/* フッター */}
+ <CrossSell currentService="EC説明文生成AI" />
+
  <footer className="border-t border-gray-100 py-8 pb-24 sm:pb-8 text-center text-xs text-gray-400">
  <div className="max-w-5xl mx-auto px-6 space-y-3">
  <p className="font-medium text-gray-500">AI商品説明文ジェネレーター</p>
