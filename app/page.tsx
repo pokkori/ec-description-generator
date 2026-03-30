@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import React, { useEffect, useState, useCallback } from "react";
+import { ShareButtons } from "@/components/ShareButtons";
+import { AdBanner } from "@/components/AdBanner";
 
 /* ---- SVG Icon helper (replaces all emoji) ---- */
 const IC: Record<string, React.ReactNode> = {
@@ -1045,19 +1047,10 @@ export default function LandingPage() {
  </div>
  </section>
 
- {/* X Share */}
+ {/* シェアセクション */}
  <section className="py-8 px-6 max-w-3xl mx-auto text-center">
- <p className="text-gray-400 text-sm mb-4">EC商品説明文を4プラットフォーム分一括生成！ネットショップ出品者の方にシェアしませんか？</p>
- <a
- href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("AIがEC商品説明文を4プラットフォーム分一括生成！無料3回 #EC #楽天 #Amazon")}&url=${encodeURIComponent("https://ec-description-generator.vercel.app")}`}
- target="_blank"
- rel="noopener noreferrer"
- aria-label="EC商品説明文ジェネレーターをXでシェアする（新しいタブで開きます）"
- className="inline-flex items-center gap-2 bg-black text-white px-5 py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors min-h-[44px]"
- >
- <span>𝕏</span>
- <span>Xでシェアする</span>
- </a>
+ <p className="text-gray-400 text-sm mb-4">EC商品説明文ジェネレーターを友達にシェア</p>
+ <ShareButtons url="https://ec-description-generator.vercel.app" text="EC説明文生成AIを使ってみた！" hashtags="EC説明文生成AI" />
  </section>
 
  {/* スティッキーモバイルCTA */}
@@ -1079,9 +1072,11 @@ export default function LandingPage() {
  <Link href="/legal" className="hover:text-gray-600" aria-label="特定商取引法に基づく表示を見る">特定商取引法</Link>
  <Link href="/terms" className="hover:text-gray-600" aria-label="利用規約を読む">利用規約</Link>
  <Link href="/privacy" className="hover:text-gray-600" aria-label="プライバシーポリシーを読む">プライバシーポリシー</Link>
+ <Link href="/cancel" className="hover:text-gray-600" aria-label="解約・退会ページを見る">解約・退会</Link>
  </div>
  </div>
  </footer>
+ <AdBanner slot="" />
  </main>
  );
 }
