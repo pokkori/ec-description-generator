@@ -296,6 +296,36 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 
 export default function LandingPage() {
  return (
+ <>
+ <script
+   type="application/ld+json"
+   dangerouslySetInnerHTML={{
+     __html: JSON.stringify({
+       '@context': 'https://schema.org',
+       '@type': 'FAQPage',
+       mainEntity: [
+         { '@type': 'Question', name: 'EC説明文（商品説明文）とは何ですか？', acceptedAnswer: { '@type': 'Answer', text: '楽天・Amazon・Yahoo!ショッピングなどのECサイトで商品ページに掲載する文章です。商品の特徴・メリット・使用方法などを記述し、検索上位表示と購買転換率（CVR）向上に直結します。' } },
+         { '@type': 'Question', name: '生成した説明文の著作権はどうなりますか？', acceptedAnswer: { '@type': 'Answer', text: '生成された文章はご利用者様に帰属し、商用利用（楽天・Amazon等への掲載）も自由に行えます。著作権の問題なくそのまま商品ページへ掲載いただけます。' } },
+         { '@type': 'Question', name: '楽天とAmazonで説明文の最適な文字数は違いますか？', acceptedAnswer: { '@type': 'Answer', text: 'はい、異なります。楽天市場は400〜800字の感情訴求型の長文が効果的です。Amazonは200〜400字の箇条書き・スペック重視が推奨されます。このAIは選択したプラットフォームに合わせて自動最適化します。' } },
+         { '@type': 'Question', name: '景表法・薬機法に違反しないか心配です', acceptedAnswer: { '@type': 'Answer', text: 'このAIは生成と同時に景品表示法・薬機法のNGワードを自動チェックします。「最高」「No.1」「治る」「医師も推薦」などの違反表現を検出・警告する機能を標準搭載しています。' } },
+         { '@type': 'Question', name: '無料で何回使えますか？', acceptedAnswer: { '@type': 'Answer', text: '登録不要・クレジットカード不要で3回まで無料でご利用いただけます。それ以上使いたい場合はスタンダードプラン（¥980/月・50件）からご利用いただけます。' } },
+       ],
+     }).replace(/</g, '\\u003c'),
+   }}
+ />
+ <script
+   type="application/ld+json"
+   dangerouslySetInnerHTML={{
+     __html: JSON.stringify({
+       '@context': 'https://schema.org',
+       '@type': 'SoftwareApplication',
+       name: 'EC説明文生成AI',
+       operatingSystem: 'Web',
+       applicationCategory: 'BusinessApplication',
+       offers: { '@type': 'Offer', price: 0, priceCurrency: 'JPY' },
+     }).replace(/</g, '\\u003c'),
+   }}
+ />
  <main className="min-h-screen relative" style={{background: 'radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%), #FAFBFF'}}>
  <style jsx global>{`@keyframes float-particle { 0%, 100% { transform: translateY(0px) scale(1); opacity: 0.3; } 50% { transform: translateY(-20px) scale(1.2); opacity: 0.7; } }`}</style>
  <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
@@ -1078,5 +1108,6 @@ export default function LandingPage() {
  </footer>
  <AdBanner slot="" />
  </main>
+ </>
  );
 }
