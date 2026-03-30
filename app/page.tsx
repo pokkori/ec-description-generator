@@ -3,6 +3,8 @@ import Link from "next/link";
 import React, { useEffect, useState, useCallback } from "react";
 import { ShareButtons } from "@/components/ShareButtons";
 import { AdBanner } from "@/components/AdBanner";
+import { StreakBanner } from "@/components/StreakBanner";
+import { UsageCounter } from "@/components/UsageCounter";
 
 /* ---- SVG Icon helper (replaces all emoji) ---- */
 const IC: Record<string, React.ReactNode> = {
@@ -345,6 +347,8 @@ export default function LandingPage() {
  </div>
  </nav>
 
+ <StreakBanner />
+
  {/* ヒーロー */}
  <section className="max-w-5xl mx-auto px-6 py-20 text-center">
  <div className="inline-block bg-blue-50 text-blue-700 text-xs font-medium px-3 py-1 rounded-full mb-6">
@@ -369,6 +373,7 @@ export default function LandingPage() {
  <span>無料3回</span>
  <span>クレカ不要</span>
  </div>
+ <div className="max-w-xs mx-auto mb-4"><UsageCounter /></div>
  <Link
  href="/tool"
  aria-label="AI商品説明文ジェネレーターで無料3回、登録不要で今すぐ説明文を生成する"
