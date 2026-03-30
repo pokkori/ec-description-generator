@@ -75,18 +75,18 @@ function calculateCVRScore(text: string, platform: string): {
   const ngWords = ["最高", "日本一", "No.1", "絶対", "完全", "100%保証", "必ず", "ナンバーワン", "業界初"];
   const ngFound = ngWords.filter(w => text.includes(w));
   const ngScore = ngFound.length === 0 ? 20 : Math.max(0, 20 - ngFound.length * 7);
-  breakdown.push({ label: "景表法クリア", score: ngScore, maxScore: 20, hint: ngFound.length > 0 ? `⚠️「${ngFound.slice(0, 2).join("」「")}」は使用注意` : "✅ NGワードなし" });
+  breakdown.push({ label: "景表法クリア", score: ngScore, maxScore: 20, hint: ngFound.length > 0 ? `注意:「${ngFound.slice(0, 2).join("」「")}」は使用注意` : "OK NGワードなし" });
 
   // 4. 数値・スペック訴求
   const numberMatches = text.match(/\d+/g) || [];
   const numberScore = numberMatches.length >= 3 ? 20 : numberMatches.length >= 1 ? 12 : 4;
-  breakdown.push({ label: "スペック訴求", score: numberScore, maxScore: 20, hint: numberMatches.length > 0 ? `✅ 数値${numberMatches.length}箇所` : "サイズ・重量・成分%等を追加" });
+  breakdown.push({ label: "スペック訴求", score: numberScore, maxScore: 20, hint: numberMatches.length > 0 ? `OK 数値${numberMatches.length}箇所` : "サイズ・重量・成分%等を追加" });
 
   // 5. 行動促進ワード
   const ctaWords = ["ぜひ", "お試し", "今すぐ", "チェック", "どうぞ", "ご確認", "ぜひお試し", "お求め"];
   const ctaCount = ctaWords.filter(w => text.includes(w)).length;
   const ctaScore = ctaCount >= 2 ? 20 : ctaCount === 1 ? 13 : 4;
-  breakdown.push({ label: "購買促進", score: ctaScore, maxScore: 20, hint: ctaCount > 0 ? `✅ 行動促進ワード${ctaCount}個` : "「ぜひお試しください」等を追加" });
+  breakdown.push({ label: "購買促進", score: ctaScore, maxScore: 20, hint: ctaCount > 0 ? `OK 行動促進ワード${ctaCount}個` : "「ぜひお試しください」等を追加" });
 
   const total = breakdown.reduce((sum, b) => sum + b.score, 0);
   return { score: total, breakdown };
@@ -111,7 +111,7 @@ function CVRScorePanel({ text, platform }: { text: string; platform: string }) {
   return (
     <div className={`border-2 rounded-xl p-4 mb-4 backdrop-blur-sm ${bgClass}`}>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-bold text-gray-700">🎯 CVR予測スコア（リアルタイム採点）</span>
+        <span className="text-sm font-bold text-gray-700">CVR予測スコア（リアルタイム採点）</span>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${badgeClass}`}>{badge}</span>
       </div>
 
@@ -209,13 +209,13 @@ function extractCvrScore(text: string): number | null {
 
 function parseResult(text: string): ParsedResult {
   const sectionDefs = [
-    { key: "商品タイトル案", icon: "📌" },
-    { key: "キャッチコピー", icon: "✨" },
-    { key: "商品説明文", icon: "📝" },
-    { key: "SEOキーワード", icon: "🔍" },
-    { key: "よくある質問", icon: "💬" },
-    { key: "ポジショニング", icon: "📊" },
-    { key: "CVR予測スコア", icon: "🎯" },
+    { key: "商品タイトル案", icon: "T" },
+    { key: "キャッチコピー", icon: "C" },
+    { key: "商品説明文", icon: "D" },
+    { key: "SEOキーワード", icon: "K" },
+    { key: "よくある質問", icon: "Q" },
+    { key: "ポジショニング", icon: "P" },
+    { key: "CVR予測スコア", icon: "S" },
   ];
   const cleanText = text.replace(/===CVR_SCORE===\d+\n?/g, "");
   const sections: Section[] = [];
@@ -229,7 +229,7 @@ function parseResult(text: string): ParsedResult {
       sections.push({ title: matched.key, icon: matched.icon, content });
     }
   }
-  if (sections.length === 0) sections.push({ title: "生成結果", icon: "📄", content: cleanText });
+  if (sections.length === 0) sections.push({ title: "生成結果", icon: "R", content: cleanText });
   return { sections, raw: cleanText };
 }
 
@@ -249,7 +249,7 @@ function CopyButton({ text, label = "コピー" }: { text: string; label?: strin
         aria-label={copied ? "コピーしました" : `${label}をクリップボードにコピーする`}
         className={`text-xs px-3 py-1 rounded-lg font-medium transition-all ${copied ? "bg-green-100 text-green-700 border border-green-300" : "bg-gray-100 hover:bg-gray-200 text-gray-600"}`}
       >
-        {copied ? "✅ コピーしました！" : label}
+        {copied ? "コピーしました" : label}
       </button>
       {copied && (
         <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap z-10 shadow-lg animate-bounce">
@@ -278,7 +278,7 @@ function ECPreview({ parsed, productName, platform }: { parsed: ParsedResult; pr
   return (
     <div className="border-2 border-blue-200 rounded-xl overflow-hidden bg-gray-50">
       <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 flex items-center gap-2">
-        <span>🛒 {platformLabel} プレビュー</span>
+        <span>{platformLabel} プレビュー</span>
         <span className="ml-auto text-blue-200">（参考イメージ）</span>
       </div>
       <div className="p-4 bg-white">
@@ -332,7 +332,7 @@ function QualityScoreCard({ text }: { text: string }) {
   return (
     <div className={`border-2 rounded-xl p-4 mb-4 backdrop-blur-sm ${bg}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-bold text-gray-700">📊 説明文品質スコア</span>
+        <span className="text-sm font-bold text-gray-700">説明文品質スコア</span>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>{badge}</span>
       </div>
       <div className="flex items-end gap-3 mb-2">
@@ -345,7 +345,7 @@ function QualityScoreCard({ text }: { text: string }) {
       <ul className="space-y-1.5">
         {items.map((item, i) => (
           <li key={i} className="flex items-center gap-2 text-xs text-gray-700">
-            <span className={item.ok ? "text-green-500" : "text-red-400"}>{item.ok ? "✅" : "❌"}</span>
+            <span className={item.ok ? "text-green-500" : "text-red-400"}>{item.ok ? "OK" : "--"}</span>
             <span className={item.ok ? "" : "text-gray-400"}>{item.label}</span>
             <span className={`ml-auto font-semibold ${item.ok ? "text-green-600" : "text-gray-300"}`}>+{item.point}pt</span>
           </li>
@@ -363,7 +363,7 @@ function CvrScoreCard({ score }: { score: number }) {
   return (
     <div className={`border-2 rounded-xl p-4 mb-4 backdrop-blur-sm ${bg}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-bold text-gray-700">🎯 CVR予測スコア（購買転換率）</span>
+        <span className="text-sm font-bold text-gray-700">CVR予測スコア（購買転換率）</span>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${score >= 75 ? "bg-green-100 text-green-700" : score >= 60 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{label}</span>
       </div>
       <div className="flex items-end gap-3 mb-2">
@@ -387,7 +387,7 @@ function ABTestCompare({ textA, textB, labelA, labelB }: { textA: string; textB:
   const qB = calcQualityScore(textB);
   return (
     <div className="mt-4 bg-indigo-50 border border-indigo-200 rounded-xl p-4">
-      <p className="text-sm font-bold text-indigo-800 mb-3">🔬 A/Bテスト比較</p>
+      <p className="text-sm font-bold text-indigo-800 mb-3">A/Bテスト比較</p>
       <div className="grid grid-cols-2 gap-3">
         {[
           { label: labelA, text: textA, score: qA.total, key: "A" as const },
@@ -458,7 +458,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
     <div className="space-y-3">
       {/* 達成感演出バナー */}
       <div className="animate-bounce bg-green-50 border-2 border-green-400 rounded-xl px-4 py-3 flex items-center gap-3">
-        <span className="text-2xl">✅</span>
+        <svg className="w-7 h-7 text-green-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
         <div className="flex-1">
           <p className="text-sm font-bold text-green-800">説明文が完成しました！</p>
           <p className="text-xs text-green-600">タイトル案・キャッチコピー・説明文・SEOキーワード・Q&A・ポジショニング</p>
@@ -491,7 +491,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
           aria-label={showPreview ? "ECサイト風プレビューを閉じる" : "ECサイト風プレビューを表示する"}
           aria-expanded={showPreview}
           className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${showPreview ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-600 hover:bg-purple-200"}`}>
-          <span aria-hidden="true">🛒</span> プレビュー
+          <span aria-hidden="true"><svg className="w-3.5 h-3.5 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg></span> プレビュー
         </button>
       </div>
 
@@ -515,7 +515,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
               className="w-full text-sm text-gray-800 font-sans leading-relaxed border border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y"
               placeholder="説明文を直接編集するとCVRスコアがリアルタイムで更新されます"
             />
-            <p className="text-xs text-blue-500 mt-1">✏️ テキストを編集するとCVRスコアが自動更新されます</p>
+            <p className="text-xs text-blue-500 mt-1">テキストを編集するとCVRスコアが自動更新されます</p>
             <CharCountGuide text={editedDesc} platform={platform ?? "amazon"} />
           </>
         ) : section.title === "SEOキーワード" ? (
@@ -528,7 +528,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
         )}
       </div>
       <div className="flex gap-2 justify-end flex-wrap">
-        <CopyButton text={parsed.raw} label="📋 全文コピー" />
+        <CopyButton text={parsed.raw} label="全文コピー" />
         <button onClick={handlePrint} aria-label="商品説明文を印刷またはPDFとして保存する" className="text-xs px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium">
           印刷・PDF保存
         </button>
@@ -543,12 +543,12 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
         </a>
       {/* 次のアクション3選 */}
       <div className="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <p className="text-sm font-bold text-blue-800 mb-3">📋 次にやるべきこと3選</p>
+        <p className="text-sm font-bold text-blue-800 mb-3">次にやるべきこと3選</p>
         <ol className="space-y-2">
           {[
-            { icon: "📋", text: "この説明文をコピーして商品ページに貼り付ける" },
-            { icon: "🔄", text: "別の角度（価格訴求・感情訴求）で再生成してA/Bテストする" },
-            { icon: "📊", text: "説明文を変えた後の商品ページのCVR変化を計測する" },
+            { icon: "1", text: "この説明文をコピーして商品ページに貼り付ける" },
+            { icon: "2", text: "別の角度（価格訴求・感情訴求）で再生成してA/Bテストする" },
+            { icon: "3", text: "説明文を変えた後の商品ページのCVR変化を計測する" },
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-3 text-sm text-gray-700">
               <span className="text-lg leading-none">{item.icon}</span>
@@ -559,7 +559,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
       </div>
       {/* 生成した説明文を使ってみよう - BASE A8.netアフィリエイト */}
       <div className="mt-4 bg-orange-50 border border-orange-200 rounded-xl p-4">
-        <p className="text-sm font-bold text-orange-800 mb-3">🏪 生成した説明文を使ってみよう</p>
+        <p className="text-sm font-bold text-orange-800 mb-3">生成した説明文を使ってみよう</p>
         <a
           href="https://px.a8.net/svt/ejp?a8mat=4AZIOF+8ZAE9E+2QQG+62MDD"
           target="_blank"
@@ -602,7 +602,7 @@ function SeoKeywordBar({ keywords }: { keywords: string }) {
   return (
     <div className="mt-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-gray-500">🔍 SEOキーワード強度 ({total}個)</span>
+        <span className="text-xs text-gray-500">SEOキーワード強度 ({total}個)</span>
         <span className={`text-xs font-bold ${labelColor}`}>{label}</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -630,7 +630,7 @@ function MultiPlatformPanel({ results, onClose }: { results: MultiPlatformResult
   return (
     <div className="mt-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-300 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-bold text-indigo-800">🔀 3プラットフォーム同時比較</p>
+        <p className="text-sm font-bold text-indigo-800">3プラットフォーム同時比較</p>
         <button onClick={onClose} aria-label="3プラットフォーム比較パネルを閉じる" className="text-xs text-gray-400 hover:text-gray-600 bg-white border border-gray-200 px-2 py-0.5 rounded-full">閉じる</button>
       </div>
       {/* プラットフォーム選択タブ */}
@@ -669,7 +669,7 @@ function MultiPlatformPanel({ results, onClose }: { results: MultiPlatformResult
       {results[activeIdx] && (
         <div className="bg-white border border-gray-200 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-gray-700">📝 商品説明文</span>
+            <span className="text-xs font-bold text-gray-700">商品説明文</span>
             <button
               onClick={() => {
                 const desc = results[activeIdx].parsed.sections.find(s => s.title === "商品説明文")?.content ?? results[activeIdx].rawText;
@@ -678,7 +678,7 @@ function MultiPlatformPanel({ results, onClose }: { results: MultiPlatformResult
               aria-label={copiedIdx === activeIdx ? "コピーしました" : `${results[activeIdx]?.platformLabel ?? ""}の商品説明文をクリップボードにコピーする`}
               className={`text-xs px-3 py-1 rounded-lg font-medium transition-all ${copiedIdx === activeIdx ? "bg-green-100 text-green-700 border border-green-300" : "bg-gray-100 hover:bg-gray-200 text-gray-600"}`}
             >
-              {copiedIdx === activeIdx ? "✅ コピーしました" : "コピー"}
+              {copiedIdx === activeIdx ? "コピーしました" : "コピー"}
             </button>
           </div>
           <p className="text-xs text-gray-700 whitespace-pre-wrap leading-relaxed">
@@ -696,7 +696,7 @@ function PaywallModal({ onClose, onStartPayjp }: { onClose: () => void; onStartP
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
       <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
         <div className="text-center mb-5">
-          <div className="text-3xl mb-2">🚀</div>
+          <div className="mb-2"><svg className="w-10 h-10 mx-auto text-blue-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></div>
           <h2 className="text-lg font-bold text-gray-900">無料枠を使い切りました</h2>
           <p className="text-sm text-gray-500 mt-1">まとめ生成で作業効率を10倍に</p>
         </div>
@@ -753,18 +753,18 @@ function ProductCard({ product, index, total, onChange, onRemove, canRemove }: {
       {/* カテゴリプリセット */}
       <div className="flex flex-wrap gap-1.5">
         {[
-          { emoji: "👕", label: "アパレル", cat: "ファッション・衣類", feat: "- 素材：コットン100%\n- サイズ展開：S〜XL\n- 洗濯機OK\n- 速乾・吸湿性高い" },
-          { emoji: "💄", label: "美容", cat: "コスメ・スキンケア", feat: "- 肌に優しい低刺激処方\n- 無香料・無添加\n- 全肌タイプ対応\n- 美容成分○○配合" },
-          { emoji: "🍳", label: "キッチン", cat: "キッチン用品・調理器具", feat: "- 食洗機対応\n- IH対応\n- ステンレス素材\n- 高さ調節機能付き" },
-          { emoji: "📱", label: "デジタル", cat: "スマートフォン・電子機器", feat: "- バッテリー持続XX時間\n- 防水・防塵対応\n- USB-C充電\n- 軽量コンパクト設計" },
-          { emoji: "🧸", label: "ギフト", cat: "ギフト・プレゼント向け", feat: "- ラッピング対応\n- メッセージカード付き\n- 贈り物箱入り\n- 高見え・特別感ある仕上げ" },
+          { emoji: "A", label: "アパレル", cat: "ファッション・衣類", feat: "- 素材：コットン100%\n- サイズ展開：S〜XL\n- 洗濯機OK\n- 速乾・吸湿性高い" },
+          { emoji: "B", label: "美容", cat: "コスメ・スキンケア", feat: "- 肌に優しい低刺激処方\n- 無香料・無添加\n- 全肌タイプ対応\n- 美容成分○○配合" },
+          { emoji: "K", label: "キッチン", cat: "キッチン用品・調理器具", feat: "- 食洗機対応\n- IH対応\n- ステンレス素材\n- 高さ調節機能付き" },
+          { emoji: "D", label: "デジタル", cat: "スマートフォン・電子機器", feat: "- バッテリー持続XX時間\n- 防水・防塵対応\n- USB-C充電\n- 軽量コンパクト設計" },
+          { emoji: "G", label: "ギフト", cat: "ギフト・プレゼント向け", feat: "- ラッピング対応\n- メッセージカード付き\n- 贈り物箱入り\n- 高見え・特別感ある仕上げ" },
         ].map((p) => (
           <button
             key={p.label}
             type="button"
             onClick={() => { onChange(product.id, "category", p.cat); onChange(product.id, "features", p.feat); }}
             aria-label={`カテゴリ「${p.label}」のプリセットを入力欄に反映する`}
-            className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full transition font-medium"
+            className="text-xs bg-blue-50 hover:bg-indigo-500/20 text-indigo-300 border border-blue-200 px-2.5 py-1 rounded-full transition font-medium"
           >
             <span aria-hidden="true">{p.emoji}</span> {p.label}
           </button>
@@ -861,7 +861,7 @@ function ECToolInner() {
     if (res.status === 429) return { error: "LIMIT", newCount: count };
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      return { error: data.error || "少し時間を置いてもう一度お試しください 🙏", newCount: count };
+      return { error: data.error || "少し時間を置いてもう一度お試しください", newCount: count };
     }
     const reader = res.body?.getReader();
     const decoder = new TextDecoder();
@@ -1033,13 +1033,13 @@ function ECToolInner() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen" style={{ background: "radial-gradient(ellipse at 20% 50%, rgba(120,119,198,0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(255,119,198,0.1) 0%, transparent 50%), #0F0F1A" }}>
       {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} onStartPayjp={(plan) => { setPayjpPlan(plan); setShowPaywall(false); setShowPayjp(true); }} />}
       {showPayjp && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl relative">
             <button onClick={() => setShowPayjp(false)} aria-label="決済モーダルを閉じる" className="absolute top-3 right-3 text-gray-400 text-xl">✕</button>
-            <div className="text-3xl mb-3 text-center">🛒</div>
+            <div className="mb-3 text-center"><svg className="w-10 h-10 mx-auto text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
             <h2 className="text-lg font-bold mb-2 text-center">プレミアムプラン</h2>
             <p className="text-sm text-gray-500 mb-4 text-center">{payjpPlan === "enterprise" ? "エンタープライズ — 無制限+API連携" : payjpPlan === "business" ? "ビジネス — 無制限+複数ショップ" : "スタンダード — 無制限利用"}</p>
             <KomojuButton planId="standard" planLabel={payjpPlan === "enterprise" ? "エンタープライズプラン ¥9,800/月" : payjpPlan === "business" ? "ビジネスプラン ¥4,980/月" : "スタンダードプラン ¥980/月"} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50" />
@@ -1047,12 +1047,12 @@ function ECToolInner() {
         </div>
       )}
 
-      <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
+      <header className="backdrop-blur-sm bg-white/5 border-b border-white/10 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">AI商品説明文ジェネレーター</h1>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-300 via-indigo-200 to-purple-300 bg-clip-text text-transparent">AI商品説明文ジェネレーター</h1>
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-sm text-gray-500">楽天・Amazon・Yahoo!・メルカリ対応｜まとめ生成で作業効率10倍</p>
+              <p className="text-sm text-gray-400">楽天・Amazon・Yahoo!・メルカリ対応｜まとめ生成で作業効率10倍</p>
               {streak && streak.count > 0 && <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-3 py-1 text-sm"><span>{streak.count}日連続利用中</span></div>}
             </div>
             {streakMsg && <div className="text-orange-600 font-bold text-sm">{streakMsg}</div>}
@@ -1065,7 +1065,7 @@ function ECToolInner() {
               aria-label="スタンダードプランにアップグレードして無制限で利用する"
             />
           ) : (
-            <span className="text-xs px-3 py-1 rounded-full font-medium bg-blue-100 text-blue-700">
+            <span className="text-xs px-3 py-1 rounded-full font-medium bg-indigo-500/20 text-indigo-300">
               無料あと{remaining}回
             </span>
           )}
@@ -1095,14 +1095,14 @@ function ECToolInner() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* プラットフォーム */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">販売プラットフォーム（全商品共通）</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">販売プラットフォーム（全商品共通）</label>
                 <div className="grid grid-cols-2 gap-2">
                   {([
-                    { value: "rakuten", label: "楽天市場", icon: "🛒", hint: "感情訴求・特典強調・読みやすい長文" },
-                    { value: "amazon", label: "Amazon.co.jp", icon: "📦", hint: "検索SEO重視・スペック詳細・箇条書き" },
-                    { value: "yahoo", label: "Yahoo!ショッピング", icon: "🛍️", hint: "価格訴求・レビュー連動・シンプル" },
-                    { value: "mercari", label: "メルカリ", icon: "♻️", hint: "状態記載・簡潔・信頼感重視" },
-                    { value: "base", label: "BASE / Shopify", icon: "🏪", hint: "ブランドストーリー・世界観・感性訴求" },
+                    { value: "rakuten", label: "楽天市場", icon: "R", hint: "感情訴求・特典強調・読みやすい長文" },
+                    { value: "amazon", label: "Amazon.co.jp", icon: "A", hint: "検索SEO重視・スペック詳細・箇条書き" },
+                    { value: "yahoo", label: "Yahoo!ショッピング", icon: "Y", hint: "価格訴求・レビュー連動・シンプル" },
+                    { value: "mercari", label: "メルカリ", icon: "M", hint: "状態記載・簡潔・信頼感重視" },
+                    { value: "base", label: "BASE / Shopify", icon: "B", hint: "ブランドストーリー・世界観・感性訴求" },
                   ] as { value: Platform; label: string; icon: string; hint: string }[]).map(p => (
                     <button key={p.value} type="button" onClick={() => setPlatform(p.value)}
                       aria-label={`${p.label}向けに説明文を生成する（${p.hint}）`}
@@ -1119,13 +1119,13 @@ function ECToolInner() {
 
               {/* 文体トーン選択 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">文体トーン</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">文体トーン</label>
                 <div className="grid grid-cols-2 gap-2">
                   {([
-                    { value: "professional" as Tone, label: "プロフェッショナル", icon: "💼", hint: "信頼感・実績・スペック重視" },
-                    { value: "friendly" as Tone, label: "親しみやすい", icon: "😊", hint: "口コミ風・共感・日常生活" },
-                    { value: "luxury" as Tone, label: "高級感", icon: "✨", hint: "ブランド・こだわり・特別感" },
-                    { value: "casual" as Tone, label: "カジュアル", icon: "🎉", hint: "若者向け・SNS映え・フレンドリー" },
+                    { value: "professional" as Tone, label: "プロフェッショナル", icon: "P", hint: "信頼感・実績・スペック重視" },
+                    { value: "friendly" as Tone, label: "親しみやすい", icon: "F", hint: "口コミ風・共感・日常生活" },
+                    { value: "luxury" as Tone, label: "高級感", icon: "L", hint: "ブランド・こだわり・特別感" },
+                    { value: "casual" as Tone, label: "カジュアル", icon: "C", hint: "若者向け・SNS映え・フレンドリー" },
                   ]).map(t => (
                     <button key={t.value} type="button" onClick={() => setTone(t.value)}
                       aria-label={`文体トーン「${t.label}」を選択する（${t.hint}）`}
@@ -1142,12 +1142,12 @@ function ECToolInner() {
 
               {/* SEOキーワード強度 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">SEOキーワード強度</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">SEOキーワード強度</label>
                 <div className="grid grid-cols-3 gap-2">
                   {([
-                    { value: "seo" as KeywordStrength, label: "SEO重視", icon: "🔍", hint: "キーワード密度高め・検索上位狙い" },
-                    { value: "balanced" as KeywordStrength, label: "バランス型", icon: "⚖️", hint: "自然な文中にSEOキーワード挿入" },
-                    { value: "natural" as KeywordStrength, label: "読みやすさ重視", icon: "📖", hint: "人間が読んで自然な流暢な文章" },
+                    { value: "seo" as KeywordStrength, label: "SEO重視", icon: "S", hint: "キーワード密度高め・検索上位狙い" },
+                    { value: "balanced" as KeywordStrength, label: "バランス型", icon: "B", hint: "自然な文中にSEOキーワード挿入" },
+                    { value: "natural" as KeywordStrength, label: "読みやすさ重視", icon: "N", hint: "人間が読んで自然な流暢な文章" },
                   ]).map(k => (
                     <button key={k.value} type="button" onClick={() => setKeywordStrength(k.value)}
                       aria-label={`SEOキーワード強度「${k.label}」を選択する（${k.hint}）`}
@@ -1181,9 +1181,13 @@ function ECToolInner() {
               <button type="submit" disabled={loading}
                 aria-label={loading ? "商品説明文を生成中です" : isLimitReached ? "有料プランに申し込む" : "商品説明文セットを生成する"}
                 aria-busy={loading}
-                className={`w-full font-bold py-3 rounded-xl text-white transition-colors ${isLimitReached ? "bg-orange-500 hover:bg-orange-600" : "bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300"}`}>
+                className="w-full font-bold py-4 min-h-[52px] rounded-xl text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-60 disabled:hover:translate-y-0"
+                style={isLimitReached
+                  ? { background: 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)', boxShadow: '0 0 20px rgba(249, 115, 22, 0.3), 0 4px 12px rgba(0,0,0,0.15)' }
+                  : { background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)', boxShadow: '0 0 20px rgba(99, 102, 241, 0.3), 0 4px 12px rgba(0,0,0,0.15)' }
+                }>
                 {loading
-                  ? `生成中... ${progress.current}/${progress.total}商品`
+                  ? <span className="flex items-center justify-center gap-2"><svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/><path d="M12 2a10 10 0 0110 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>{`生成中... ${progress.current}/${progress.total}商品`}</span>
                   : isLimitReached ? "有料プランに申し込む"
                   : mode === "bulk" && products.length > 1
                   ? `${products.filter(p => p.productName && p.features).length}商品をまとめ生成する`
@@ -1207,7 +1211,7 @@ function ECToolInner() {
                 aria-busy={multiLoading}
                 className="w-full font-bold py-2.5 rounded-xl text-indigo-700 bg-indigo-50 border-2 border-indigo-300 hover:bg-indigo-100 disabled:opacity-50 transition-colors text-sm"
               >
-                {multiLoading ? "3プラットフォーム同時生成中..." : <><span aria-hidden="true">🔀</span> Amazon・楽天・Yahoo! 3サイト同時比較</>}
+                {multiLoading ? "3プラットフォーム同時生成中..." : "Amazon・楽天・Yahoo! 3サイト同時比較"}
               </button>
             </form>
           </div>
@@ -1223,7 +1227,7 @@ function ECToolInner() {
                   aria-expanded={showHistory}
                   className="text-xs text-blue-600 border border-blue-200 rounded-full px-3 py-1 hover:bg-blue-50 transition-colors"
                 >
-                  <span aria-hidden="true">📋</span> 過去の履歴 ({history.length}件)
+                  過去の履歴 ({history.length}件)
                 </button>
               )}
             </div>
@@ -1272,7 +1276,7 @@ function ECToolInner() {
             {/* 禁止ワードチェック結果 */}
             {ngWords.length > 0 && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-3">
-                <p className="text-red-700 font-bold text-sm mb-2">⚠️ 景表法・薬機法 注意ワード検出</p>
+                <p className="text-red-700 font-bold text-sm mb-2">景表法・薬機法 注意ワード検出</p>
                 <div className="flex flex-wrap gap-2">
                   {ngWords.map(w => (
                     <span key={w} className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">{w}</span>
@@ -1323,7 +1327,7 @@ function ECToolInner() {
                     <button onClick={downloadAll} aria-label="全商品の説明文をまとめてテキストファイルでダウンロードする" className="px-3 py-1.5 rounded-lg text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors">
                       <span aria-hidden="true">⬇</span> まとめてDL
                     </button>
-                    <button onClick={downloadCSV} aria-label="説明文をCSV形式でダウンロードする" className="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
+                    <button onClick={downloadCSV} aria-label="説明文をCSV形式でダウンロードする" className="px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-500/20 text-indigo-300 hover:bg-blue-200 transition-colors">
                       <span aria-hidden="true">⬇</span> CSV出力
                     </button>
                   </div>
@@ -1340,7 +1344,7 @@ function ECToolInner() {
                         aria-label="別のパターンで商品説明文を再生成する"
                         className="text-sm text-gray-500 underline hover:text-gray-700 disabled:opacity-40"
                       >
-                        <span aria-hidden="true">🔄</span> 別のパターンで再生成
+                        別のパターンで再生成
                       </button>
                       {isLimitReached && (
                         <div className="backdrop-blur-sm bg-white/90 border border-blue-200 rounded-xl p-3">
@@ -1358,19 +1362,19 @@ function ECToolInner() {
                 ) : null}
               </div>
             ) : (
-              <div className="flex-1 bg-white border border-gray-200 rounded-xl flex flex-col items-center justify-center min-h-[420px] gap-3">
-                <div className="text-4xl">🛒</div>
+              <div className="flex-1 backdrop-blur-sm bg-white/80 border border-white/30 shadow-lg rounded-2xl flex flex-col items-center justify-center min-h-[420px] gap-3 p-6">
+                <svg className="w-12 h-12 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 <p className="text-sm text-center font-medium text-gray-500">
                   {mode === "bulk" ? "複数商品を入力してまとめ生成" : "商品情報を入力して生成"}
                 </p>
-                <div className="bg-gray-50 rounded-lg p-4 text-xs space-y-2 w-full max-w-[260px]">
+                <div className="bg-gray-50/80 backdrop-blur-sm rounded-xl p-4 text-xs space-y-2 w-full max-w-[260px]">
                   <p className="font-semibold text-gray-600">1商品につき生成される内容：</p>
-                  <p className="text-gray-500">📌 商品タイトル案（3パターン）</p>
-                  <p className="text-gray-500">✨ キャッチコピー</p>
-                  <p className="text-gray-500">📝 商品説明文（300〜500文字）</p>
-                  <p className="text-gray-500">🔍 SEOキーワード（15個）</p>
-                  <p className="text-gray-500">💬 Q&A（3問）</p>
-                  <p className="text-gray-500">📊 競合ポジショニング</p>
+                  <p className="text-gray-500">T. 商品タイトル案（3パターン）</p>
+                  <p className="text-gray-500">C. キャッチコピー</p>
+                  <p className="text-gray-500">D. 商品説明文（300-500文字）</p>
+                  <p className="text-gray-500">K. SEOキーワード（15個）</p>
+                  <p className="text-gray-500">Q. Q&A（3問）</p>
+                  <p className="text-gray-500">P. 競合ポジショニング</p>
                 </div>
                 {mode === "bulk" && (
                   <div className="bg-blue-50 rounded-lg p-3 text-xs text-blue-700 w-full max-w-[260px]">

@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
+import { Noto_Sans_JP } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
+
+const notoSansJP = Noto_Sans_JP({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-noto-sans-jp",
+});
 
 const SITE_URL = "https://ec-description-generator.vercel.app";
 const TITLE = "AI商品説明文ジェネレーター | 楽天・Amazon・Yahoo!・メルカリ対応";
@@ -25,6 +33,7 @@ export const metadata: Metadata = {
     images: ["/og.png"],
   },
   metadataBase: new URL(SITE_URL),
+  other: { "theme-color": "#0F0F1A" },
 };
 
 const APP_JSON_LD = {
@@ -88,7 +97,7 @@ const FAQ_JSON_LD = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ja">
+    <html lang="ja" className={`dark ${notoSansJP.variable}`}>
       <head>
         <script
           type="application/ld+json"
@@ -99,7 +108,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
         />
       </head>
-      <body className="antialiased">
+      <body className={`${notoSansJP.className} antialiased`}>
         {children}
         <Analytics />
       </body>

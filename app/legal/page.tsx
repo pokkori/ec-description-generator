@@ -16,21 +16,33 @@ const ITEMS = [
 
 export default function LegalPage() {
   return (
-    <div className="min-h-screen bg-white">
-      <nav className="bg-white border-b px-6 py-4">
-        <Link href="/" className="font-bold text-gray-900">AI商品説明文ジェネレーター</Link>
+    <div className="min-h-screen relative" style={{ background: "linear-gradient(135deg, #0f0b15 0%, #1a1333 25%, #0d1f2d 50%, #1a1333 75%, #0f0b15 100%)" }}>
+      <div className="fixed inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #6366f1, transparent 70%)" }} />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle, #8b5cf6, transparent 70%)" }} />
+      </div>
+
+      <nav className="relative z-10 border-b border-white/5 px-6 py-4">
+        <Link href="/" className="font-bold text-white/80 hover:text-white transition-colors flex items-center gap-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          AI商品説明文ジェネレーター
+        </Link>
       </nav>
-      <div className="max-w-2xl mx-auto px-6 py-12">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">特定商取引法に基づく表記</h1>
-        <p className="text-gray-500 text-sm mb-8">Act on Specified Commercial Transactions</p>
-        <dl className="space-y-4">
-          {ITEMS.map((item) => (
-            <div key={item.label} className="border-b border-gray-100 pb-4">
-              <dt className="text-sm font-semibold text-gray-500 mb-1">{item.label}</dt>
-              <dd className="text-gray-800 text-sm leading-relaxed">{item.value}</dd>
-            </div>
-          ))}
-        </dl>
+
+      <div className="relative z-10 max-w-2xl mx-auto px-6 py-12">
+        <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">特定商取引法に基づく表記</h1>
+        <p className="text-slate-500 text-sm mb-8">Act on Specified Commercial Transactions</p>
+
+        <div className="rounded-2xl p-6 sm:p-8" style={{ background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <dl className="space-y-4">
+            {ITEMS.map((item, i) => (
+              <div key={item.label} className={i < ITEMS.length - 1 ? "border-b border-white/5 pb-4" : "pb-0"}>
+                <dt className="text-sm font-semibold text-slate-400 mb-1">{item.label}</dt>
+                <dd className="text-slate-200 text-sm leading-relaxed">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </div>
     </div>
   );
