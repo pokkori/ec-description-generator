@@ -5,6 +5,7 @@ import KomojuButton from "@/components/KomojuButton";
 import { track } from '@vercel/analytics';
 import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
 import { useTypewriter } from "@/lib/useTypewriter";
+import ConfettiLaunch from "@/components/ConfettiLaunch";
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
@@ -506,7 +507,7 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
         <ECPreview parsed={{ ...parsed, sections: currentSections }} productName={productName} platform={platform} />
       )}
 
-      <div className="backdrop-blur-sm bg-white/90 border border-white/30 shadow-lg rounded-2xl p-4 min-h-[280px]">
+      <div className="glass-dark rounded-2xl p-4 min-h-[280px]">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-semibold text-gray-700">{section.icon} {section.title}</span>
           <CopyButton text={section.content} />
@@ -836,6 +837,7 @@ function ECToolInner() {
   const [showMultiCompare, setShowMultiCompare] = useState(false);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [streakMsg, setStreakMsg] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -982,6 +984,8 @@ function ECToolInner() {
       saveHistory(newResults[0].product.productName, platform, tone, newResults[0].parsed.raw);
       setHistory(loadHistory());
       const s = updateStreak("ec_setsumei"); setStreak(s); const msg = getStreakMilestoneMessage(s.count); if (msg) setStreakMsg(msg);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000);
     }
     if (currentCount >= FREE_LIMIT) setTimeout(() => setShowPaywall(true), 1500);
   };
@@ -1040,6 +1044,7 @@ function ECToolInner() {
 
   return (
     <main className="min-h-screen" style={{ background: "radial-gradient(ellipse at 20% 50%, rgba(120,119,198,0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(255,119,198,0.1) 0%, transparent 50%), #0F0F1A" }}>
+      <ConfettiLaunch trigger={showConfetti} message="説明文が完成！" />
       {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} onStartPayjp={(plan) => { setPayjpPlan(plan); setShowPaywall(false); setShowPayjp(true); }} />}
       {showPayjp && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
