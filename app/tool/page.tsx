@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import KomojuButton from "@/components/KomojuButton";
 import { track } from '@vercel/analytics';
 import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
+import { useTypewriter } from "@/lib/useTypewriter";
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
@@ -415,6 +416,11 @@ function ABTestCompare({ textA, textB, labelA, labelB }: { textA: string; textB:
   );
 }
 
+function SectionContent({ content }: { content: string }) {
+  const displayed = useTypewriter(content, 15);
+  return <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{displayed}</pre>;
+}
+
 function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: ParsedResult; productName?: string; platform?: string; rawText?: string; tone?: string }) {
   const [activeTab, setActiveTab] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
@@ -520,11 +526,11 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
           </>
         ) : section.title === "SEOキーワード" ? (
           <>
-            <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{section.content}</pre>
+            <SectionContent content={section.content} />
             <SeoKeywordBar keywords={section.content} />
           </>
         ) : (
-          <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{section.content}</pre>
+          <SectionContent content={section.content} />
         )}
       </div>
       <div className="flex gap-2 justify-end flex-wrap">
@@ -1306,8 +1312,13 @@ function ECToolInner() {
                     <pre className="text-xs text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">{streamingText.slice(-800)}</pre>
                   </div>
                 ) : (
-                  <div className="flex-1 flex items-center justify-center">
-                    <p className="text-xs text-gray-400">タイトル案 → キャッチコピー → 説明文 → SEOキーワード</p>
+                  <div className="flex-1 p-4 space-y-3">
+                    <div className="skeleton h-4 w-3/4" />
+                    <div className="skeleton h-4 w-full" />
+                    <div className="skeleton h-4 w-5/6" />
+                    <div className="skeleton h-4 w-2/3" />
+                    <div className="skeleton h-4 w-full" />
+                    <p className="text-xs text-gray-400 mt-2">タイトル案 → キャッチコピー → 説明文 → SEOキーワード</p>
                   </div>
                 )}
               </div>
