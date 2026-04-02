@@ -825,6 +825,7 @@ function ECToolInner() {
   const [streamingText, setStreamingText] = useState("");
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [usageCount, setUsageCount] = useState(0);
+  const [isPremium, setIsPremium] = useState(false);
   const [ngWords, setNgWords] = useState<string[]>([]);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showPayjp, setShowPayjp] = useState(false);
@@ -844,6 +845,7 @@ function ECToolInner() {
     setUsageCount(parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10));
     setHistory(loadHistory());
     setStreak(loadStreak("ec_setsumei"));
+    fetch("/api/auth/status").then(r => r.json()).then(d => { if (d.isPremium) setIsPremium(true); }).catch(() => {});
     // LPの料金プランボタンから直接決済フローに入る
     const plan = searchParams.get("plan");
     if (plan === "standard" || plan === "business" || plan === "enterprise") {
@@ -853,7 +855,7 @@ function ECToolInner() {
   }, [searchParams]);
 
   const remaining = Math.max(0, FREE_LIMIT - usageCount);
-  const isLimitReached = usageCount >= FREE_LIMIT;
+  const isLimitReached = !isPremium && usageCount >= FREE_LIMIT;
 
   const updateProduct = (id: number, field: keyof ProductInput, value: string) => {
     setProducts(ps => ps.map(p => p.id === id ? { ...p, [field]: value } : p));
