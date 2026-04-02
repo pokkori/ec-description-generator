@@ -6,6 +6,7 @@ import { track } from '@vercel/analytics';
 import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
 import { useTypewriter } from "@/lib/useTypewriter";
 import ConfettiLaunch from "@/components/ConfettiLaunch";
+import { UsageCounter } from "@/components/UsageCounter";
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
@@ -1106,6 +1107,7 @@ function ECToolInner() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="mb-1 max-w-xs"><UsageCounter /></div>
               {/* プラットフォーム */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">販売プラットフォーム（全商品共通）</label>
