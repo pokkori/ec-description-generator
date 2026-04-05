@@ -1,26 +1,27 @@
 # EC説明文生成AI
+> ECサイトの商品説明文をAIが自動生成するツール
 
-> 商品名と簡単な説明を入力するだけで、Amazon・楽天・メルカリなどEC販売用の魅力的な商品説明文をAIが自動生成するサービス
+## サービス概要
+- **カテゴリ**: EC・販売
+- **URL**: https://ec-description-generator.vercel.app
+- **提供形態**: Webブラウザで利用可能（登録不要で試せます）
+- **開発**: Claude Code + Next.js 16 + Vercel
 
-## 概要
-ECショップ運営者が商品説明文の作成に費やす時間を大幅に削減します。商品名と特徴を入力するだけで、購買意欲を高める訴求力の高い商品説明文をAIが即座に生成します。Amazon・楽天・メルカリ・Yahoo!ショッピングなど主要ECプラットフォームの特性に合わせた文章を生成します。
+## 主要ページ
+- [トップページ](https://ec-description-generator.vercel.app/): メイン機能・サービス説明
+- [ツール](https://ec-description-generator.vercel.app/tool): AI機能の利用画面（一部サービス）
+- [プライバシーポリシー](https://ec-description-generator.vercel.app/privacy): 個人情報の取り扱い
+- [特定商取引法に基づく表記](https://ec-description-generator.vercel.app/legal): 法的情報
 
-## 対象ユーザー
-Amazon・楽天・メルカリ等でECショップを運営している個人・法人、商品説明文の作成に時間がかかっている販売者、コンバージョン率を改善したいEC事業者
+## 利用シーン
+ECサイトの商品説明文をAIが自動生成するツール
 
-## 主な機能
-- 商品名と特徴入力だけで商品説明文を自動生成
-- Amazon・楽天・メルカリ等のプラットフォーム別文体に対応
-- 購買意欲を高める訴求ポイントを自動抽出・反映
-- 飲食・雑貨・アパレル・家電など幅広い商品カテゴリに対応
+## 技術スタック
+- フロントエンド: Next.js 16, React 19, TypeScript, Tailwind CSS
+- AI: Claude claude-sonnet-4-6 (Anthropic)
+- バックエンド: Vercel Edge Functions, Supabase
+- 決済: KOMOJU（クレジットカード・コンビニ払い対応）
 
-## 使い方
-1. 商品名と商品の特徴・スペックを入力する
-2. 販売するプラットフォームを選択する
-3. AIが魅力的な商品説明文を自動生成し、すぐにコピーして使える
-
-## 料金
-無料で3回まで利用可能。プレミアムプランで無制限。
-
-## URL
-https://ec-description-generator.vercel.app
+## robots.txt
+AIクローラーによるインデックスを歓迎します。
+GPTBot, ClaudeBot, PerplexityBot, Googlebot-Extended のアクセスを許可しています。
