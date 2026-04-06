@@ -18,7 +18,7 @@ function SuccessContent() {
 
   return (
     <div className="text-center">
-      <div className="text-5xl mb-4">🎉</div>
+      <div className="flex justify-center mb-4"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">ご契約ありがとうございます！</h1>
       <p className="text-gray-500 mb-6">プレミアムプランが有効になりました。</p>
       <Link href="/tool" className="inline-block bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700">
