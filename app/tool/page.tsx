@@ -4,9 +4,9 @@ import { useSearchParams } from "next/navigation";
 import KomojuButton from "@/components/KomojuButton";
 import { track } from '@vercel/analytics';
 import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
-import { useTypewriter } from "@/lib/useTypewriter";
 import ConfettiLaunch from "@/components/ConfettiLaunch";
 import { UsageCounter } from "@/components/UsageCounter";
+import AIResultCard from "@/components/AIResultCard";
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
@@ -419,8 +419,7 @@ function ABTestCompare({ textA, textB, labelA, labelB }: { textA: string; textB:
 }
 
 function SectionContent({ content }: { content: string }) {
-  const displayed = useTypewriter(content, 15);
-  return <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{displayed}</pre>;
+  return <pre className="text-sm text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">{content}</pre>;
 }
 
 function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: ParsedResult; productName?: string; platform?: string; rawText?: string; tone?: string }) {
@@ -508,33 +507,36 @@ function ResultTabs({ parsed, productName, platform, rawText, tone }: { parsed: 
         <ECPreview parsed={{ ...parsed, sections: currentSections }} productName={productName} platform={platform} />
       )}
 
-      <div className="glass-dark rounded-2xl p-4 min-h-[280px]">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-700">{section.icon} {section.title}</span>
-          <CopyButton text={section.content} />
-        </div>
-        {section.title === "商品説明文" ? (
-          <>
-            <textarea
-              value={editedDesc}
-              onChange={e => setEditedDesc(e.target.value)}
-              rows={10}
-              aria-label="商品説明文（直接編集するとCVRスコアがリアルタイムで更新されます）"
-              className="w-full text-sm text-gray-800 font-sans leading-relaxed border border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y"
-              placeholder="説明文を直接編集するとCVRスコアがリアルタイムで更新されます"
-            />
-            <p className="text-xs text-blue-500 mt-1">テキストを編集するとCVRスコアが自動更新されます</p>
-            <CharCountGuide text={editedDesc} platform={platform ?? "amazon"} />
-          </>
-        ) : section.title === "SEOキーワード" ? (
-          <>
-            <SectionContent content={section.content} />
-            <SeoKeywordBar keywords={section.content} />
-          </>
-        ) : (
-          <SectionContent content={section.content} />
-        )}
-      </div>
+      <AIResultCard
+        text={section.title === "商品説明文" ? editedDesc : section.content}
+        accentColor="#8B5CF6"
+        header={
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-purple-300">{section.title}</span>
+            <CopyButton text={section.content} />
+          </div>
+        }
+        renderContent={
+          section.title === "商品説明文"
+            ? () => (
+                <>
+                  <textarea
+                    value={editedDesc}
+                    onChange={e => setEditedDesc(e.target.value)}
+                    rows={10}
+                    aria-label="商品説明文（直接編集するとCVRスコアがリアルタイムで更新されます）"
+                    className="w-full text-sm text-gray-300 bg-white/5 font-sans leading-relaxed border border-white/10 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-purple-400 resize-y"
+                    placeholder="説明文を直接編集するとCVRスコアがリアルタイムで更新されます"
+                  />
+                  <p className="text-xs text-purple-400 mt-1">テキストを編集するとCVRスコアが自動更新されます</p>
+                  <CharCountGuide text={editedDesc} platform={platform ?? "amazon"} />
+                </>
+              )
+            : section.title === "SEOキーワード"
+              ? (t) => <><SectionContent content={t} /><SeoKeywordBar keywords={t} /></>
+              : (t) => <SectionContent content={t} />
+        }
+      />
       <div className="flex gap-2 justify-end flex-wrap">
         <CopyButton text={parsed.raw} label="全文コピー" />
         <button onClick={handlePrint} aria-label="商品説明文を印刷またはPDFとして保存する" className="text-xs px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium">
